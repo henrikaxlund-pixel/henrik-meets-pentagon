@@ -1,0 +1,710 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<meta name="robots" content="noindex, nofollow" />
+<title>Henrik — Morning Coffee Talk</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,300;0,6..72,400;0,6..72,500;0,6..72,600;1,6..72,300;1,6..72,400;1,6..72,500&family=Geist:wght@300;400;500;600&display=swap" rel="stylesheet" />
+
+<style>
+  /* ── Palette ────────────────────────────────────────────────────────── */
+  :root {
+    --paper: #EFEAE1;
+    --ink: #1A1612;
+    --ink-soft: #5B544A;
+    --rule: rgba(26, 22, 18, 0.18);
+    --serif: "Newsreader", "Times New Roman", serif;
+    --sans: "Geist", ui-sans-serif, system-ui, sans-serif;
+    --face: var(--serif);
+  }
+  html, body { background: var(--paper); margin: 0; }
+  body { font-family: var(--face); color: var(--ink); -webkit-font-smoothing: antialiased; }
+
+  deck-stage { background: #0a0908; }
+  deck-stage section {
+    background: var(--paper);
+    color: var(--ink);
+    font-family: var(--face);
+    position: relative;
+    overflow: hidden;
+    box-sizing: border-box;
+  }
+
+  .slide-pad { padding: 140px 160px; height: 100%; box-sizing: border-box; }
+  .corner-tl, .corner-tr, .corner-bl, .corner-br {
+    position: absolute;
+    font-family: var(--sans);
+    font-size: 24px;
+    font-weight: 400;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--ink-soft);
+  }
+  .corner-tl { top: 64px; left: 80px; }
+  .corner-tr { top: 64px; right: 80px; }
+  .corner-bl { bottom: 64px; left: 80px; }
+  .corner-br { bottom: 64px; right: 80px; }
+
+  .display {
+    font-family: var(--face);
+    font-weight: 400;
+    font-size: 168px;
+    line-height: 0.96;
+    letter-spacing: -0.025em;
+    margin: 0;
+    text-wrap: balance;
+  }
+  .display.italic { font-style: italic; font-weight: 300; }
+  .display.huge { font-size: 240px; line-height: 0.9; letter-spacing: -0.03em; }
+  .display.medium { font-size: 120px; }
+  .display.small { font-size: 84px; line-height: 1.04; }
+
+  .body {
+    font-family: var(--face);
+    font-weight: 400;
+    font-size: 36px;
+    line-height: 1.35;
+    letter-spacing: -0.005em;
+    color: var(--ink);
+    max-width: 1200px;
+    margin: 0;
+    text-wrap: pretty;
+  }
+  .body.soft { color: var(--ink-soft); }
+  .body em, .body i { font-style: italic; font-weight: 300; color: var(--ink-soft); }
+
+  .label {
+    font-family: var(--sans);
+    font-size: 24px;
+    font-weight: 500;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--ink-soft);
+    margin: 0;
+  }
+  .label.ink { color: var(--ink); }
+  .label-line { display: flex; align-items: center; gap: 18px; }
+  .label-line::before {
+    content: ""; display: block;
+    width: 48px; height: 1px; background: var(--ink);
+  }
+
+  .caption {
+    font-family: var(--face);
+    font-style: italic;
+    font-weight: 300;
+    font-size: 30px;
+    line-height: 1.4;
+    color: var(--ink-soft);
+    margin: 0;
+  }
+
+  image-slot { display: block; background: rgba(26, 22, 18, 0.04); }
+
+  .stack { display: flex; flex-direction: column; }
+  .stack.gap-s  { gap: 24px; }
+  .stack.gap-m  { gap: 48px; }
+  .stack.gap-l  { gap: 80px; }
+  .stack.gap-xl { gap: 140px; }
+  .center-v { height: 100%; justify-content: center; }
+  .center-h { align-items: center; text-align: center; }
+
+  .row { display: flex; }
+  .row.gap-m { gap: 64px; }
+  .row.gap-l { gap: 96px; }
+
+  .marginalia { font-family: var(--sans); font-size: 24px; letter-spacing: 0.04em; color: var(--ink-soft); }
+  .num { font-feature-settings: "tnum"; }
+
+  @keyframes arrow-nudge {
+    0%, 100% { transform: translateX(0); }
+    50%      { transform: translateX(14px); }
+  }
+
+  deck-stage section.dark-slide {
+    background: #0a0908;
+    color: #f3eee2;
+    --ink: #f3eee2;
+    --ink-soft: rgba(243, 238, 226, 0.65);
+    --paper: #0a0908;
+    --rule: rgba(243, 238, 226, 0.22);
+  }
+  section.dark-slide image-slot { background: rgba(243, 238, 226, 0.04); }
+  section.dark-slide .label-line::before { background: #f3eee2; }
+
+  /* Slide videos */
+  .video-frame {
+    position: relative;
+    background: rgba(26,22,18,0.06);
+    overflow: hidden;
+  }
+  .video-frame video {
+    width: 100%; height: 100%;
+    object-fit: cover;
+    display: block;
+    background: #000;
+  }
+  .video-fallback {
+    position: absolute; inset: 0;
+    display: flex; align-items: center; justify-content: center;
+    font-family: var(--sans);
+    font-size: 14px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--ink-soft);
+    text-align: center;
+    padding: 0 24px;
+  }
+  .video-frame.has-video .video-fallback { display: none; }
+
+  /* ───────────────────────────────────────────────────────────────────── */
+  /* Password gate                                                          */
+  /* ───────────────────────────────────────────────────────────────────── */
+  body.locked deck-stage { visibility: hidden; }
+  body:not(.locked) #gate { display: none; }
+
+  #gate {
+    position: fixed; inset: 0;
+    background: var(--paper);
+    display: flex; flex-direction: column;
+    align-items: center; justify-content: center;
+    z-index: 2147483647;
+    padding: 32px;
+    box-sizing: border-box;
+  }
+  #gate .gate-mark {
+    font-family: var(--serif);
+    font-style: italic;
+    font-weight: 300;
+    font-size: clamp(64px, 12vw, 144px);
+    line-height: 0.95;
+    color: var(--ink);
+    margin: 0 0 56px 0;
+    letter-spacing: -0.025em;
+  }
+  #gate form {
+    display: flex; flex-direction: column;
+    align-items: stretch;
+    gap: 16px;
+    width: min(420px, 100%);
+  }
+  #gate label {
+    font-family: var(--sans);
+    font-size: 12px;
+    font-weight: 500;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    color: var(--ink-soft);
+  }
+  #gate input {
+    font-family: var(--serif);
+    font-size: 28px;
+    color: var(--ink);
+    background: transparent;
+    border: 0;
+    border-bottom: 1px solid var(--rule);
+    padding: 8px 0 12px 0;
+    outline: none;
+    transition: border-color 0.2s;
+  }
+  #gate input:focus { border-bottom-color: var(--ink); }
+  #gate input.shake { animation: gate-shake 0.4s; border-bottom-color: #8a1f1f; }
+  #gate .gate-row {
+    display: flex; align-items: center; justify-content: space-between;
+    gap: 24px; margin-top: 8px;
+  }
+  #gate button {
+    font-family: var(--sans);
+    font-size: 13px;
+    font-weight: 500;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--ink);
+    background: transparent;
+    border: 0;
+    cursor: pointer;
+    padding: 8px 0;
+  }
+  #gate button:hover { color: var(--ink-soft); }
+  #gate .gate-err {
+    font-family: var(--sans);
+    font-size: 12px;
+    letter-spacing: 0.06em;
+    color: #8a1f1f;
+    min-height: 1em;
+    opacity: 0;
+    transition: opacity 0.2s;
+  }
+  #gate .gate-err.show { opacity: 1; }
+  #gate .gate-foot {
+    position: absolute;
+    bottom: 32px; left: 0; right: 0;
+    text-align: center;
+    font-family: var(--sans);
+    font-size: 11px;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    color: var(--ink-soft);
+    opacity: 0.7;
+  }
+  @keyframes gate-shake {
+    0%, 100% { transform: translateX(0); }
+    25% { transform: translateX(-6px); }
+    75% { transform: translateX(6px); }
+  }
+</style>
+
+</head>
+<body class="locked">
+
+<!-- ── Password gate ─────────────────────────────────────────────────── -->
+<div id="gate" role="dialog" aria-label="Password required">
+  <p class="gate-mark">
+
+
+</p>
+  <form id="gate-form" autocomplete="off">
+    <label for="gate-input">Password</label>
+    <input id="gate-input" type="password" autocomplete="current-password" autofocus />
+    <div class="gate-err" id="gate-err">Incorrect password.</div>
+    <div class="gate-row">
+      <span class="label" style="font-size: 11px; letter-spacing: 0.22em;">Morning Coffee · 2026</span>
+      <button type="submit">Enter →</button>
+    </div>
+  </form>
+  <div class="gate-foot">By invitation.</div>
+</div>
+
+<deck-stage width="1920" height="1080" style="--deck-rail-w: 188px;">
+
+  <!-- SLIDE 1 — Hello -->
+  <section data-screen-label="01 Hello">
+    <div class="slide-pad stack center-v">
+      <p class="display italic" style="font-size: 220px;">Hello,<br>I'm Henrik.</p>
+    </div>
+    <div class="corner-bl">Morning Coffee · 2026</div>
+  </section>
+
+  <!-- SLIDE 2 — Context -->
+  <section data-screen-label="02 Context">
+    <div class="slide-pad stack gap-m" style="justify-content: flex-end;">
+      <div class="label-line"><span class="label">A little context</span></div>
+      <p class="display small" style="font-size: 92px; line-height: 1.05;">
+        Thirteen years at MacWell.<br>
+        Over a decade as partner&nbsp;and&nbsp;CD.<br>
+        <span style="color: var(--ink-soft);">Now: enjoying what's next.</span>
+      </p>
+    </div>
+  </section>
+
+  <!-- SLIDE 3 — The long version -->
+  <section data-screen-label="03 The long version">
+    <div class="slide-pad stack center-v">
+      <p class="display italic huge" style="color: var(--ink-soft);">The longish story.</p>
+    </div>
+  </section>
+
+  <!-- SLIDE 4 — Konstfack -->
+  <section data-screen-label="04 Konstfack">
+    <div class="slide-pad stack gap-m">
+      <div class="label-line"><span class="label">i.</span></div>
+      <div class="row gap-l" style="align-items: flex-end; flex: 1; min-height: 0;">
+        <img src="konstfack.png" alt="Konstfack — animated film" style="width: 1040px; height: 720px; object-fit: contain; display: block; background: transparent;">
+        <div class="stack gap-s" style="padding-bottom: 12px;">
+          <p class="display small" style="font-size: 72px; line-height: 1;">Konstfack.<br>Animated&nbsp;film.</p>
+          <p class="caption">I thought I'd make films.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- SLIDE 5 — VJing -->
+  <section data-screen-label="05 VJing">
+    <div class="slide-pad stack gap-m">
+      <div class="label-line"><span class="label">ii.</span></div>
+      <div class="row gap-l" style="align-items: flex-end; flex: 1; min-height: 0;">
+        <image-slot src="images/vjing.webp" data-s="1.0885" data-x="-12.079" data-y="-4.427" style="width: 1020px; height: 720px;" shape="rect"></image-slot>
+        <div class="stack gap-s" style="padding-bottom: 12px; max-width: 700px;">
+          <p class="display small" style="font-size: 56px; line-height: 1.04;">A life of VJ:ing<br>and media&nbsp;art.</p>
+          <p class="caption" style="font-size: 28px; line-height: 1.4; color: var(--ink);">
+            Flow. UMF. Koneisto. Pixelache. Rose Garden, DTM, Visual Systeemi — our own club.<br>
+            <span style="color: var(--ink-soft);">"The World of Piku" — video installation,<br>Ultrasound Festival, Huddersfield.<br>
+            Year-long artist grant.</span>
+          </p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- SLIDE 6 — Sellable skills -->
+  <section data-screen-label="06 Sellable skills">
+    <div class="slide-pad stack center-v gap-m">
+      <p class="display" style="font-size: 168px; line-height: 0.98;">
+        Flash.<br>After Effects.<br>3D.
+      </p>
+      <p class="display italic" style="font-size: 88px; color: var(--ink-soft); font-weight: 300;">
+        Sellable skills.
+      </p>
+    </div>
+  </section>
+
+  <!-- SLIDE 7 — Woland -->
+  <section data-screen-label="07 Woland">
+    <div class="slide-pad stack gap-m">
+      <div class="label-line"><span class="label">iii.</span></div>
+      <div class="row gap-l" style="align-items: flex-end; flex: 1; min-height: 0;">
+        <div class="video-frame" style="width: 1100px; height: 720px;">
+          <video data-slide-video data-src="woland.mp4" muted loop playsinline preload="metadata"></video>
+          <div class="video-fallback">Video — woland.mp4</div>
+        </div>
+        <div class="stack gap-s" style="padding-bottom: 12px;">
+          <p class="display small" style="font-size: 72px; line-height: 1;">Woland.</p>
+          <p class="caption"></p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- SLIDE 8 — MacWell -->
+  <section data-screen-label="08 MacWell">
+    <div class="slide-pad stack center-v gap-l">
+      <p class="label">A new chapter</p>
+      <p class="display" style="font-size: 200px; line-height: 0.95; letter-spacing: -0.03em;">MacWell.<br><span style="color: var(--ink-soft);">Day one.</span></p>
+    </div>
+    <div style="position: absolute; bottom: 80px; right: 120px; display: flex; align-items: center; gap: 20px;">
+      <span style="font-family: var(--sans); font-size: 22px; font-weight: 500; letter-spacing: 0.22em; text-transform: uppercase; color: var(--ink-soft);">Next</span>
+      <span style="font-family: var(--face); font-size: 72px; line-height: 1; color: var(--ink); animation: arrow-nudge 1.2s ease-in-out infinite;">→</span>
+    </div>
+  </section>
+
+  <!-- SLIDE 9 — Nokia × 3 -->
+  <section data-screen-label="09 Nokia x3">
+    <div class="slide-pad" style="display: grid; grid-template-columns: 1180px 1fr; gap: 96px; align-items: center; height: 100%;">
+      <div class="video-frame" style="width: 100%; aspect-ratio: 14 / 9;">
+        <video data-slide-video data-src="nokia.mp4" muted loop playsinline preload="metadata"></video>
+        <div class="video-fallback">Video — nokia.mp4</div>
+      </div>
+      <div class="stack gap-m">
+        <div class="label-line"><span class="label"></span></div>
+        <p class="display small" style="font-size: 92px; line-height: 1.06; font-weight: 400;">
+          Nokia<br>
+          <span style="display: block; font-size: 56px; line-height: 1; color: var(--ink-soft); font-weight: 300; padding-left: 16px;">→</span>
+          Microsoft<br>
+          <span style="display: block; font-size: 56px; line-height: 1; color: var(--ink-soft); font-weight: 300; padding-left: 16px;">→</span>
+          HMD
+        </p>
+        <p class="caption" style="font-size: 30px;"></p>
+      </div>
+    </div>
+  </section>
+
+  <!-- SLIDE 10 — Nokia Devices -->
+  <section data-screen-label="10 Nokia Devices">
+    <div style="display: grid; grid-template-columns: repeat(12, minmax(0, 1fr)); grid-template-rows: repeat(12, minmax(0, 1fr)); gap: 12px; height: 100%; padding: 0; box-sizing: border-box; overflow: hidden;">
+
+      <div style="grid-area: 1 / 1 / 5 / 5; background: var(--ink); color: var(--paper); padding: 48px; display: flex; flex-direction: column; justify-content: space-between; box-sizing: border-box; min-height: 0; overflow: hidden;">
+        <p style="font-family: var(--sans); font-size: 22px; font-weight: 500; letter-spacing: 0.18em; text-transform: uppercase; color: rgba(239,234,225,0.6); margin: 0;"></p>
+        <p style="font-family: var(--face); font-weight: 400; font-size: 76px; line-height: 0.96; letter-spacing: -0.02em; color: var(--paper); margin: 0;">
+          Nokia<br>
+          <span style="text-decoration: line-through; text-decoration-thickness: 4px; color: rgba(239,234,225,0.55); font-style: italic; font-weight: 300;">Phones</span>
+          &nbsp;Devices.
+        </p>
+      </div>
+
+      <div class="video-frame" style="grid-area: 1 / 5 / 8 / 13;">
+        <video data-slide-video data-src="nokia-devices.mp4" muted loop playsinline preload="metadata"></video>
+        <div class="video-fallback">Video — nokia-devices.mp4</div>
+      </div>
+
+      <image-slot src="images/nokia-dev-tall.webp" style="grid-area: 5 / 1 / 13 / 5; width: 100%; height: 100%;" shape="rect"></image-slot>
+      <image-slot src="images/nokia-dev-b.webp" style="grid-area: 8 / 5 / 13 / 7; width: 100%; height: 100%;" shape="rect"></image-slot>
+      <image-slot src="images/nokia-dev-c.webp" style="grid-area: 8 / 7 / 13 / 10; width: 100%; height: 100%;" shape="rect"></image-slot>
+      <image-slot src="images/nokia-dev-d.webp" style="grid-area: 8 / 10 / 13 / 13; width: 100%; height: 100%;" shape="rect"></image-slot>
+
+    </div>
+  </section>
+
+  <!-- SLIDE 11 — Complicated products -->
+  <section data-screen-label="11 Complicated products">
+    <div style="display: grid; grid-template-columns: 1152px 768px; grid-template-rows: 100%; gap: 0; height: 100%; padding: 0; box-sizing: border-box;">
+
+      <div style="padding: 48px 32px 48px 80px; display: grid; grid-template-rows: auto minmax(0, 1.4fr) minmax(0, 1fr); gap: 16px; box-sizing: border-box; min-height: 0; overflow: hidden;">
+        <p class="display italic" style="font-size: 88px; line-height: 0.96; color: var(--ink); font-weight: 300; margin: 0; letter-spacing: -0.02em;">Complicated products.</p>
+        <image-slot src="images/c11-b.webp" style="width: 100%; height: 100%;" shape="rect"></image-slot>
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px; min-height: 0;">
+          <image-slot src="images/c11-c.webp" style="width: 100%; height: 100%;" shape="rect"></image-slot>
+          <image-slot src="images/c11-d.webp" data-y="24.51" style="width: 100%; height: 100%;" shape="rect"></image-slot>
+        </div>
+      </div>
+
+      <div class="video-frame" style="width: 100%; height: 100%;">
+        <video data-slide-video data-src="clients.mp4" muted loop playsinline preload="metadata"></video>
+        <div class="video-fallback">Video — clients.mp4</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- SLIDE 12 — Complicated products II -->
+  <section data-screen-label="12 Complicated products II">
+    <div style="display: grid; grid-template-columns: repeat(12, minmax(0, 1fr)); grid-template-rows: repeat(12, minmax(0, 1fr)); gap: 12px; height: 100%; padding: 0; box-sizing: border-box; overflow: hidden;">
+
+      <div style="grid-area: 1 / 1 / 5 / 5; background: var(--ink); color: var(--paper); padding: 48px; display: flex; flex-direction: column; justify-content: center; box-sizing: border-box; min-height: 0; overflow: hidden;">
+        <p style="font-family: var(--face); font-style: italic; font-weight: 300; font-size: 88px; line-height: 0.92; letter-spacing: -0.025em; color: var(--paper); margin: 0;">A through-line.</p>
+      </div>
+
+      <div class="video-frame" style="grid-area: 1 / 5 / 8 / 13;">
+        <video data-slide-video data-src="c12-hero.mp4" muted loop playsinline preload="metadata"></video>
+        <div class="video-fallback">Video — c12-hero.mp4</div>
+      </div>
+
+      <image-slot src="images/c12-tall.webp" data-s="1.3211" data-x="-0.897" data-y="0.381" style="grid-area: 5 / 1 / 13 / 5; width: 100%; height: 100%;" shape="rect"></image-slot>
+
+      <div class="video-frame" style="grid-area: 8 / 5 / 13 / 9;">
+        <video data-slide-video data-src="clients2.mp4" muted loop playsinline preload="metadata"></video>
+        <div class="video-fallback">Video — clients2.mp4</div>
+      </div>
+
+      <image-slot src="images/c12-wide.webp" style="grid-area: 8 / 9 / 13 / 13; width: 100%; height: 100%;" shape="rect"></image-slot>
+
+    </div>
+  </section>
+
+  <!-- SLIDE 13 — Three escape rooms -->
+  <section data-screen-label="13 Three escape rooms">
+    <div class="slide-pad stack center-v gap-m">
+      <p class="label">An aside</p>
+      <p class="display italic huge" style="font-size: 220px; color: var(--ink);">Three escape&nbsp;rooms.</p>
+    </div>
+  </section>
+
+  <!-- SLIDE 14 — Nokia OutBreak -->
+  <section data-screen-label="14 OutBreak">
+    <div style="display: grid; grid-template-columns: 1fr 380px 300px; grid-template-rows: auto 1fr; gap: 32px 56px; height: 100%; padding: 120px 120px; box-sizing: border-box;">
+      <div class="label-line" style="grid-column: 1 / -1;"><span class="label">Escape room · I</span></div>
+      <image-slot src="images/outbreak.webp" style="grid-column: 1; grid-row: 2; width: 100%; height: 100%;" shape="rect"></image-slot>
+      <div class="stack" style="grid-column: 2; grid-row: 2; gap: 24px;">
+        <image-slot src="images/outbreak-b.webp" style="width: 100%; height: calc(50% - 12px);" shape="rect"></image-slot>
+        <image-slot src="images/outbreak-c.webp" style="width: 100%; height: calc(50% - 12px);" shape="rect"></image-slot>
+      </div>
+      <div class="stack gap-s" style="grid-column: 3; grid-row: 2; align-self: end;">
+        <p class="display small" style="font-size: 64px; line-height: 1;">Nokia<br>OutBreak.</p>
+        <p class="caption">A leadership exercise,<br>disguised as an escape room.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- SLIDE 15 — 2810 -->
+  <section data-screen-label="15 2810">
+    <div style="display: grid; grid-template-columns: 1fr 380px 300px; grid-template-rows: auto 1fr; gap: 32px 56px; height: 100%; padding: 120px 120px; box-sizing: border-box;">
+      <div class="label-line" style="grid-column: 1 / -1;"><span class="label">Escape room · II</span></div>
+      <image-slot src="images/r2810.webp" style="grid-column: 1; grid-row: 2; width: 100%; height: 100%;" shape="rect"></image-slot>
+      <div class="stack" style="grid-column: 2; grid-row: 2; gap: 24px;">
+        <image-slot src="images/r2810-b.webp" style="width: 100%; height: calc(50% - 12px);" shape="rect"></image-slot>
+        <image-slot src="images/r2810-c.webp" style="width: 100%; height: calc(50% - 12px);" shape="rect"></image-slot>
+      </div>
+      <div class="stack gap-s" style="grid-column: 3; grid-row: 2; align-self: end;">
+        <p class="display small num" style="font-size: 112px; line-height: 0.96; font-weight: 400; letter-spacing: -0.02em;">2810.</p>
+        <p class="caption">Workplace safety.<br>Locked in a room.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- SLIDE 16 — 1nter5ec7ion -->
+  <section data-screen-label="16 1nter5ec7ion">
+    <div style="display: grid; grid-template-columns: minmax(0, 1fr) 880px; grid-template-rows: auto 1fr; gap: 28px 80px; height: 100%; padding: 96px 120px; box-sizing: border-box;">
+
+      <div class="label-line" style="grid-column: 1 / -1;"><span class="label">Escape room · III</span></div>
+
+      <div class="stack gap-m" style="grid-column: 1; grid-row: 2; justify-content: center;">
+        <p class="display small num" style="font-size: 116px; line-height: 0.96; letter-spacing: -0.02em;">1nter5ec7ion.</p>
+        <p class="caption" style="font-size: 32px;">Five people. Five booths.<br>One virtual room.</p>
+        <p class="caption" style="color: var(--ink); font-size: 32px;">For Microsoft Global.<br><span style="color: var(--ink-soft);">Explaining enterprise security.</span></p>
+      </div>
+
+      <div class="stack" style="grid-column: 2; grid-row: 2; gap: 24px; min-height: 0;">
+        <image-slot src="intersection-1.jpg" style="width: 100%; flex: 1 1 0; min-height: 0;" shape="rect"></image-slot>
+        <image-slot src="intersection-2.jpg" style="width: 100%; flex: 1 1 0; min-height: 0;" shape="rect"></image-slot>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- SLIDE 17 — More recently — -->
+  <section data-screen-label="17 More recently">
+    <div class="slide-pad stack center-v">
+      <p class="display italic" style="font-size: 180px; color: var(--ink-soft);">More recently —</p>
+    </div>
+  </section>
+
+  <!-- SLIDE 18 — TheStorage -->
+  <section data-screen-label="18 TheStorage">
+    <div style="display: grid; grid-template-columns: repeat(12, minmax(0, 1fr)); grid-template-rows: repeat(12, minmax(0, 1fr)); gap: 12px; height: 100%; padding: 0; box-sizing: border-box; overflow: hidden;">
+
+      <div style="grid-area: 1 / 1 / 5 / 5; background: var(--ink); color: var(--paper); padding: 48px; display: flex; flex-direction: column; justify-content: space-between; box-sizing: border-box; min-height: 0; overflow: hidden;">
+        <p style="font-family: var(--sans); font-size: 24px; font-weight: 500; letter-spacing: 0.18em; text-transform: uppercase; color: rgba(239,234,225,0.65); margin: 0;">Recent work · I</p>
+        <p style="font-family: var(--face); font-weight: 400; font-size: 80px; line-height: 0.94; letter-spacing: -0.02em; color: var(--paper); margin: 0;">TheStorage.</p>
+      </div>
+
+      <image-slot src="images/storage.webp" data-y="19.144" style="grid-area: 1 / 5 / 8 / 13; width: 100%; height: 100%;" shape="rect"></image-slot>
+      <image-slot src="images/storage-2.webp" style="grid-area: 5 / 1 / 13 / 5; width: 100%; height: 100%;" shape="rect"></image-slot>
+      <image-slot src="images/storage-3.webp" style="grid-area: 8 / 5 / 13 / 13; width: 100%; height: 100%;" shape="rect"></image-slot>
+
+    </div>
+  </section>
+
+  <!-- SLIDE 19 — Canatu -->
+  <section data-screen-label="19 Canatu">
+    <div style="display: grid; grid-template-columns: repeat(12, minmax(0, 1fr)); grid-template-rows: repeat(12, minmax(0, 1fr)); gap: 12px; height: 100%; padding: 0; box-sizing: border-box; overflow: hidden;">
+
+      <image-slot src="images/canatu.webp" style="grid-area: 1 / 1 / 8 / 9; width: 100%; height: 100%;" shape="rect"></image-slot>
+
+      <div style="grid-area: 1 / 9 / 5 / 13; background: var(--ink); color: var(--paper); padding: 48px; display: flex; flex-direction: column; justify-content: space-between; box-sizing: border-box; min-height: 0; overflow: hidden; text-align: right;">
+        <p style="font-family: var(--sans); font-size: 24px; font-weight: 500; letter-spacing: 0.18em; text-transform: uppercase; color: rgba(239,234,225,0.65); margin: 0;">Recent work · II</p>
+        <p style="font-family: var(--face); font-weight: 400; font-size: 80px; line-height: 0.94; letter-spacing: -0.02em; color: var(--paper); margin: 0;">Canatu.</p>
+      </div>
+
+      <image-slot src="images/canatu-3.webp" style="grid-area: 8 / 1 / 13 / 9; width: 100%; height: 100%;" shape="rect"></image-slot>
+      <image-slot src="images/canatu-2.webp" style="grid-area: 5 / 9 / 13 / 13; width: 100%; height: 100%;" shape="rect"></image-slot>
+
+    </div>
+  </section>
+
+  <!-- SLIDE 20 — Techno Beat -->
+  <section data-screen-label="20 Techno Beat">
+    <div class="slide-pad stack center-v gap-l">
+      <p class="label">Where I am now</p>
+      <p class="display" style="font-size: 232px; line-height: 0.94; letter-spacing: -0.03em;">Techno&nbsp;Beat.</p>
+      <div class="stack gap-s">
+        <p class="display small" style="font-size: 64px; line-height: 1.1; color: var(--ink-soft); font-weight: 300; font-style: italic;">Fractional creative direction &amp; consultancy.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- SLIDE 21 — Blut Noir -->
+  <section class="dark-slide" data-screen-label="21 Blut Noir">
+    <div class="slide-pad" style="display: grid; grid-template-columns: 530px 1fr; gap: 120px; align-items: center; height: 100%;">
+      <image-slot src="blutnoir.png" style="width: 100%; height: 800px;" shape="rect"></image-slot>
+      <div class="stack gap-m">
+        <div class="label-line"><span class="label">An art project</span></div>
+        <p class="display" style="font-size: 156px; line-height: 0.96; letter-spacing: -0.03em;">Blut&nbsp;Noir</p>
+        <p class="body" style="font-size: 36px; max-width: 720px;">Exhibition at Helsinki Metal Festival Summer 2026</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- SLIDE 22 — A long way around -->
+  <section data-screen-label="22 A long way around">
+    <div class="slide-pad stack center-v">
+      <p class="display italic huge" style="color: var(--ink);">A long way around.</p>
+    </div>
+  </section>
+
+  <!-- SLIDE 23 — Thanks -->
+  <section data-screen-label="23 Thanks">
+    <div class="slide-pad stack center-v">
+      <p class="display italic" style="font-size: 200px;">Thanks for<br>the breakfast.</p>
+    </div>
+  </section>
+
+</deck-stage>
+
+<script src="image-slot.js"></script>
+<script src="deck-stage.js"></script>
+
+<script>
+  // ── Password gate ────────────────────────────────────────────────────
+  // Client-side SHA-256 check. NOT cryptographically secure — anyone with
+  // browser dev tools and a few minutes can bypass. Keeps casual viewers out.
+  (() => {
+    const HASH = 'fa39fa5bc9b6e5fffa08684dca13c03d6706b5636d7a1b126b86f61909b5d373';
+    const STORE_KEY = 'henrik-deck-unlocked-v1';
+
+    const body = document.body;
+    const form = document.getElementById('gate-form');
+    const input = document.getElementById('gate-input');
+    const err = document.getElementById('gate-err');
+
+    async function sha256(str) {
+      const buf = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(str));
+      return [...new Uint8Array(buf)].map(b => b.toString(16).padStart(2, '0')).join('');
+    }
+
+    function unlock() {
+      body.classList.remove('locked');
+      try { sessionStorage.setItem(STORE_KEY, '1'); } catch (e) {}
+      // Kick the videos: the slide-video controller waits for the active
+      // slide; on unlock we just nudge it to (re)check.
+      window.dispatchEvent(new Event('deck-unlocked'));
+    }
+
+    // Session-persistent unlock
+    try { if (sessionStorage.getItem(STORE_KEY) === '1') unlock(); } catch (e) {}
+
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const pw = input.value;
+      if (!pw) return;
+      const h = await sha256(pw);
+      if (h === HASH) {
+        err.classList.remove('show');
+        unlock();
+      } else {
+        err.classList.add('show');
+        input.classList.remove('shake');
+        // restart animation
+        void input.offsetWidth;
+        input.classList.add('shake');
+        input.select();
+      }
+    });
+  })();
+
+  // ── Slide-bound video playback ───────────────────────────────────────
+  // Set src from data-src (with a HEAD check to avoid console errors when
+  // the .mp4 isn't shipped). Play on slide enter, pause on leave.
+  (() => {
+    const videos = document.querySelectorAll('video[data-slide-video]');
+
+    videos.forEach((v) => {
+      const src = v.getAttribute('data-src');
+      const frame = v.closest('.video-frame');
+      if (!src || !frame) return;
+      fetch(src, { method: 'HEAD' })
+        .then((r) => {
+          if (!r.ok) throw new Error('missing');
+          v.src = src;
+          v.load();
+          v.addEventListener('loadeddata', () => frame.classList.add('has-video'), { once: true });
+        })
+        .catch(() => {
+          // Leave fallback visible — no console noise.
+        });
+    });
+
+    function updateAll() {
+      videos.forEach((v) => {
+        const section = v.closest('section');
+        if (!section) return;
+        const active = section.hasAttribute('data-deck-active');
+        if (active && v.src) v.play().catch(() => {});
+        else v.pause();
+      });
+    }
+
+    // Watch the deck for slide changes
+    const deck = document.querySelector('deck-stage');
+    if (deck) {
+      new MutationObserver(updateAll).observe(deck, {
+        subtree: true, attributes: true, attributeFilter: ['data-deck-active'],
+      });
+    }
+    window.addEventListener('deck-unlocked', () => setTimeout(updateAll, 300));
+    setTimeout(updateAll, 600);
+  })();
+</script>
+
+</body>
+</html>
