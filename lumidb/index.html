@@ -1,0 +1,1709 @@
+<!DOCTYPE html><html lang="en"><head>
+
+
+<meta charset="UTF-8">
+<title>LumiDB × Henrik Axlund — proposal</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="">
+<link href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,300;0,6..72,400;0,6..72,500;0,6..72,600;0,6..72,700;1,6..72,300;1,6..72,400;1,6..72,500;1,6..72,600&amp;family=Geist+Mono:wght@400;500&amp;display=swap" rel="stylesheet">
+<style>
+  :root {
+    /* palette */
+    --cream: #EEE8DC;
+    --paper: #F2EDE3;
+    --ink: #1A1814;
+    --ink-soft: #5A554B;
+    --ink-faint: #8A8170;
+    --rule: #C8C0AE;
+    --rule-soft: #D8D0BD;
+    --accent: #A8462A;
+    --dark-bg: #161311;
+    --dark-ink: #EEE8DC;
+    --dark-ink-soft: #9E978A;
+    --dark-rule: #3A342C;
+
+    /* type scale (1920×1080) */
+    --type-display: 168px;
+    --type-hero: 132px;
+    --type-title: 88px;
+    --type-h2: 56px;
+    --type-h3: 40px;
+    --type-body-lg: 36px;
+    --type-body: 32px;
+    --type-small: 26px;
+    --type-meta: 24px;
+
+    /* spacing */
+    --pad-top: 90px;
+    --pad-bottom: 90px;
+    --pad-x: 130px;
+    --gap-section: 60px;
+    --gap-block: 48px;
+    --gap-item: 24px;
+
+    --font-serif: 'Newsreader', 'Times New Roman', serif;
+    --font-mono: 'Geist Mono', ui-monospace, 'SF Mono', Menlo, monospace;
+  }
+
+  html, body { margin: 0; padding: 0; background: #0a0908; color: var(--ink); font-family: var(--font-serif); }
+
+  deck-stage { background: #0a0908; }
+
+  /* Every slide */
+  section {
+    background: var(--cream);
+    color: var(--ink);
+    font-family: var(--font-serif);
+    font-weight: 400;
+    overflow: hidden;
+    padding: var(--pad-top) var(--pad-x) var(--pad-bottom);
+    box-sizing: border-box;
+    display: flex;
+    flex-direction: column;
+    position: relative;
+  }
+  section.dark { background: var(--dark-bg); color: var(--dark-ink); }
+  section.paper { background: var(--paper); }
+
+  /* meta header that appears on most slides */
+  .meta {
+    font-family: var(--font-mono);
+    font-size: var(--type-meta);
+    color: var(--ink-faint);
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    font-weight: 400;
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+  }
+  .dark .meta { color: var(--dark-ink-soft); }
+
+  .meta .left { display: flex; gap: 28px; align-items: baseline; }
+  .meta .num { color: var(--ink); }
+  .dark .meta .num { color: var(--dark-ink); }
+
+  /* generic */
+  h1, h2, h3, p, ul, ol, li { margin: 0; padding: 0; }
+  ul, ol { list-style: none; }
+
+  .eyebrow {
+    font-family: var(--font-mono);
+    font-size: var(--type-meta);
+    color: var(--ink-faint);
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    font-weight: 400;
+  }
+  .dark .eyebrow { color: var(--dark-ink-soft); }
+
+  .rule { height: 1px; background: var(--rule); width: 100%; }
+  .dark .rule { background: var(--dark-rule); }
+
+  .accent { color: var(--accent); }
+  em, .it { font-style: italic; }
+
+  /* ============ SLIDE 1: COVER ============ */
+  .s-cover { justify-content: space-between; }
+  .s-cover .cover-title {
+    font-family: var(--font-serif);
+    font-size: var(--type-hero);
+    line-height: 0.94;
+    font-weight: 400;
+    letter-spacing: -0.025em;
+    max-width: 1500px;
+  }
+  .s-cover .cover-title .x { font-style: italic; color: var(--ink-soft); font-weight: 300; margin: 0 16px; }
+  .s-cover .cover-sub {
+    font-family: var(--font-serif);
+    font-size: var(--type-h3);
+    font-weight: 300;
+    font-style: italic;
+    color: var(--ink-soft);
+    margin-top: 28px;
+    letter-spacing: -0.01em;
+  }
+  .s-cover .cover-bottom {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+    gap: 80px;
+  }
+  .s-cover .cover-bottom .col {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    font-family: var(--font-mono);
+    font-size: var(--type-meta);
+    color: var(--ink-soft);
+    letter-spacing: 0.02em;
+  }
+  .s-cover .cover-bottom .col .label {
+    color: var(--ink-faint);
+    text-transform: uppercase;
+    font-size: 24px;
+    letter-spacing: 0.06em;
+    margin-bottom: 6px;
+  }
+  .s-cover .cover-bottom .col .val { color: var(--ink); font-size: var(--type-meta); }
+
+  /* ============ SLIDE 2: WHERE YOU ARE ============ */
+  .s-context .body {
+    margin-top: var(--gap-section);
+    display: grid;
+    grid-template-columns: 1fr 1.4fr;
+    gap: 120px;
+    flex: 1;
+    align-items: start;
+  }
+  .s-context h1.title {
+    font-size: var(--type-title);
+    line-height: 1.02;
+    letter-spacing: -0.02em;
+    font-weight: 400;
+    max-width: 600px;
+  }
+  .s-context h1.title em { color: var(--ink-soft); font-weight: 300; }
+  .s-context .prose p {
+    font-size: var(--type-body-lg);
+    line-height: 1.34;
+    margin-bottom: 36px;
+    max-width: 900px;
+    color: var(--ink);
+    letter-spacing: -0.005em;
+  }
+  .s-context .prose p:last-child { margin-bottom: 0; }
+  .s-context .prose p em { color: var(--ink); }
+  .s-context .prose .closer {
+    font-size: var(--type-body-lg);
+    line-height: 1.32;
+    font-style: italic;
+    color: var(--ink);
+    border-top: 1px solid var(--rule);
+    padding-top: 32px;
+    margin-top: 8px;
+    max-width: 900px;
+  }
+  .s-context .prose .closer .em { font-style: normal; color: var(--accent); }
+
+  /* ============ SLIDE 4: WHAT I AM PROPOSING ============ */
+  .s-proposal .body {
+    margin-top: var(--gap-section);
+    display: grid;
+    grid-template-columns: 1fr 1.5fr;
+    gap: 120px;
+    flex: 1;
+    align-items: start;
+  }
+  .s-proposal h1.title {
+    font-size: var(--type-title);
+    line-height: 1.02;
+    letter-spacing: -0.02em;
+    font-weight: 400;
+  }
+  .s-proposal h1.title em { color: var(--ink-soft); font-weight: 300; }
+  .s-proposal .lede {
+    margin-top: 36px;
+    font-size: var(--type-small);
+    line-height: 1.45;
+    color: var(--ink-soft);
+    font-style: italic;
+    max-width: 460px;
+  }
+  .s-proposal .list { display: flex; flex-direction: column; }
+  .s-proposal .row {
+    display: grid;
+    grid-template-columns: 80px 1fr 360px;
+    gap: 40px;
+    padding: 24px 0;
+    border-top: 1px solid var(--rule);
+    align-items: baseline;
+  }
+  .s-proposal .row:last-child { border-bottom: 1px solid var(--rule); }
+  .s-proposal .row.wrap { border-top: 2px solid var(--ink); padding-top: 28px; padding-bottom: 28px; }
+  .s-proposal .row .name {
+    font-size: 42px;
+    line-height: 1.06;
+    letter-spacing: -0.015em;
+    font-weight: 400;
+  }
+  .s-proposal .row .name .sub { display: block; font-size: 24px; font-style: italic; color: var(--ink-soft); margin-top: 6px; font-weight: 300; }
+  .s-proposal .row .idx {
+    font-family: var(--font-mono);
+    font-size: 24px;
+    color: var(--ink-faint);
+    letter-spacing: 0.04em;
+  }
+  .s-proposal .row .form {
+    font-family: var(--font-mono);
+    font-size: 24px;
+    color: var(--ink-soft);
+    letter-spacing: 0.02em;
+    text-transform: uppercase;
+    text-align: right;
+  }
+  .s-proposal .row.wrap .name { font-style: italic; }
+  .s-proposal .row.wrap .form { color: var(--accent); }
+
+  /* ============ SLIDE 5 & 7: PROJECT BRIEF (three-column) ============ */
+  .s-brief .body {
+    margin-top: var(--gap-section);
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 64px;
+  }
+  .s-brief h1.title {
+    font-size: var(--type-title);
+    line-height: 1.0;
+    letter-spacing: -0.02em;
+    font-weight: 400;
+    max-width: 1200px;
+  }
+  .s-brief h1.title em { color: var(--ink-soft); font-weight: 300; }
+  .s-brief .lede {
+    font-size: var(--type-h3);
+    line-height: 1.28;
+    font-style: italic;
+    color: var(--ink);
+    font-weight: 300;
+    max-width: 1300px;
+    letter-spacing: -0.01em;
+  }
+  .s-brief .threecol {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 80px;
+    border-top: 1px solid var(--rule);
+    padding-top: 40px;
+  }
+  .s-brief .col h3 {
+    font-family: var(--font-mono);
+    font-size: 24px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--ink-faint);
+    font-weight: 400;
+    margin-bottom: 22px;
+  }
+  .s-brief .col .lbl-num { color: var(--accent); margin-right: 8px; }
+  .s-brief .col p {
+    font-size: var(--type-small);
+    line-height: 1.42;
+    color: var(--ink);
+  }
+  .s-brief .col p + p { margin-top: 16px; }
+
+  /* Slide 7 — product film denser layout */
+  .s-product .body { gap: 36px; }
+  .s-product h1.title em { font-style: italic; }
+  .s-product .threecol.product-cols { padding-top: 28px; gap: 56px; }
+  .s-product .addon-rule {
+    margin-top: 22px !important;
+    padding-top: 18px;
+    border-top: 1px dashed var(--rule-soft);
+  }
+  .s-product .addon-label {
+    color: var(--accent);
+    font-style: normal;
+    font-family: var(--font-mono);
+    font-size: 22px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+  }
+  .s-product .addon-band {
+    margin-top: auto;
+    padding: 24px 28px;
+    border: 1px solid var(--rule);
+    background: rgba(168, 70, 42, 0.04);
+    display: grid;
+    grid-template-columns: 220px 1fr auto;
+    gap: 36px;
+    align-items: center;
+  }
+  .s-product .addon-band .addon-tag {
+    font-family: var(--font-mono);
+    font-size: 22px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--accent);
+  }
+  .s-product .addon-band .addon-name {
+    font-size: 30px;
+    line-height: 1.18;
+    letter-spacing: -0.01em;
+    color: var(--ink);
+    font-weight: 400;
+  }
+  .s-product .addon-band .addon-name em { font-style: italic; color: var(--ink-soft); font-weight: 300; }
+  .s-product .addon-band .addon-alt {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    text-align: right;
+    max-width: 520px;
+  }
+  .s-product .addon-band .addon-alt .alt-tag {
+    font-family: var(--font-mono);
+    font-size: 22px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--ink-faint);
+  }
+  .s-product .addon-band .addon-alt .alt-text {
+    font-size: 24px;
+    line-height: 1.34;
+    color: var(--ink-soft);
+    font-style: italic;
+    letter-spacing: -0.005em;
+  }
+
+  /* ============ SLIDE 8: VIDEO CONTENT ENGINE (clean geometric) ============ */
+  .s-pipeline .body {
+    margin-top: 48px;
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 40px;
+    min-height: 0;
+  }
+  .s-pipeline h1.title {
+    font-size: var(--type-title);
+    line-height: 1.0;
+    letter-spacing: -0.02em;
+    font-weight: 400;
+  }
+  .s-pipeline h1.title em { color: var(--ink-soft); font-weight: 300; font-style: italic; }
+  .s-pipeline .lede {
+    font-size: var(--type-h3);
+    line-height: 1.28;
+    font-style: italic;
+    color: var(--ink);
+    font-weight: 300;
+    max-width: 1300px;
+    letter-spacing: -0.01em;
+  }
+  .s-pipeline .sketch { flex: 1; position: relative; min-height: 0; display: flex; align-items: center; }
+  .s-pipeline .sketch svg { width: 100%; height: auto; display: block; }
+  .s-pipeline .legend {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 80px;
+    border-top: 1px solid var(--rule);
+    padding-top: 32px;
+  }
+  .s-pipeline .legend .col h4 {
+    font-family: var(--font-mono);
+    font-size: 24px;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--ink-faint);
+    font-weight: 400;
+    margin-bottom: 18px;
+  }
+  .s-pipeline .legend .col h4 .lbl-num { color: var(--accent); margin-right: 8px; }
+  .s-pipeline .legend .col p {
+    font-size: var(--type-small);
+    line-height: 1.42;
+    color: var(--ink);
+  }
+  .s-pipeline .legend .col p + p { margin-top: 12px; }
+  .s-pipeline .legend .col p em { font-style: italic; color: var(--ink-soft); }
+
+  /* ============ SLIDE 9: FRACTIONAL ============ */
+  .s-fractional .body {
+    margin-top: var(--gap-section);
+    flex: 1;
+    display: grid;
+    grid-template-columns: 1fr 1.4fr;
+    gap: 120px;
+    align-items: start;
+  }
+  .s-fractional h1.title {
+    font-size: var(--type-title);
+    line-height: 1.0;
+    letter-spacing: -0.02em;
+    font-weight: 400;
+  }
+  .s-fractional h1.title em { color: var(--ink-soft); font-weight: 300; font-style: italic; }
+  .s-fractional .lede {
+    margin-top: 36px;
+    font-size: 30px;
+    line-height: 1.4;
+    color: var(--ink-soft);
+    font-style: italic;
+    max-width: 500px;
+  }
+  .s-fractional .stamp {
+    margin-top: 60px;
+    font-family: var(--font-mono);
+    font-size: 24px;
+    color: var(--accent);
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+  }
+  .s-fractional .stamp .big {
+    font-family: var(--font-serif);
+    font-style: italic;
+    font-size: 96px;
+    line-height: 1;
+    letter-spacing: -0.03em;
+    color: var(--ink);
+    text-transform: none;
+    font-weight: 300;
+    margin-bottom: 6px;
+  }
+  .s-fractional ul.includes { display: flex; flex-direction: column; }
+  .s-fractional ul.includes li {
+    display: grid;
+    grid-template-columns: 60px 1fr;
+    gap: 28px;
+    padding: 26px 0;
+    border-top: 1px solid var(--rule);
+    align-items: baseline;
+  }
+  .s-fractional ul.includes li:last-child { border-bottom: 1px solid var(--rule); }
+  .s-fractional ul.includes li .mark {
+    font-family: var(--font-mono);
+    font-size: 24px;
+    color: var(--ink-faint);
+  }
+  .s-fractional ul.includes li .text {
+    font-size: 30px;
+    line-height: 1.32;
+    color: var(--ink);
+    letter-spacing: -0.005em;
+  }
+  .s-fractional ul.includes li .text em { font-style: italic; color: var(--ink-soft); }
+
+  /* Slide 9 — price stamp + footer */
+  .s-fractional .stamp.price-stamp .big {
+    font-size: 96px;
+    color: var(--accent);
+    letter-spacing: -0.02em;
+    font-style: italic;
+    line-height: 0.95;
+  }
+  .s-fractional .fractional-footer {
+    margin-top: 36px;
+    font-family: var(--font-mono);
+    font-size: 22px;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    color: var(--ink-faint);
+  }
+  .s-fractional .fractional-footer em {
+    font-family: var(--font-serif);
+    font-style: italic;
+    text-transform: none;
+    letter-spacing: -0.005em;
+    color: var(--ink-soft);
+    font-size: 24px;
+    margin-left: 6px;
+  }
+
+  /* ============ SLIDE 10: PRICING (DARK) ============ */
+  .s-pricing .body {
+    margin-top: var(--gap-section);
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 56px;
+  }
+  .s-pricing h1.title {
+    font-size: var(--type-title);
+    line-height: 1.0;
+    letter-spacing: -0.02em;
+    font-weight: 400;
+  }
+  .s-pricing h1.title em { color: var(--dark-ink-soft); font-weight: 300; font-style: italic; }
+  .s-pricing .lede {
+    font-size: var(--type-h3);
+    line-height: 1.3;
+    font-style: italic;
+    color: var(--dark-ink);
+    font-weight: 300;
+    max-width: 1300px;
+    letter-spacing: -0.01em;
+  }
+  .s-pricing .grid {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    gap: 0;
+    border-top: 1px solid var(--dark-rule);
+    border-bottom: 1px solid var(--dark-rule);
+  }
+  .s-pricing .grid .cell {
+    padding: 32px 24px;
+    border-right: 1px solid var(--dark-rule);
+    display: flex;
+    flex-direction: column;
+    gap: 18px;
+    min-height: 260px;
+  }
+  .s-pricing .grid .cell:last-child { border-right: none; }
+  .s-pricing .grid .cell .num {
+    font-family: var(--font-mono);
+    font-size: 24px;
+    color: var(--dark-ink-soft);
+    letter-spacing: 0.08em;
+  }
+  .s-pricing .grid .cell .label {
+    font-size: 28px;
+    line-height: 1.14;
+    color: var(--dark-ink);
+    letter-spacing: -0.01em;
+    font-weight: 400;
+  }
+  .s-pricing .grid .cell .label em { font-style: italic; color: var(--dark-ink-soft); font-weight: 300; display: block; font-size: 24px; margin-top: 6px; line-height: 1.28; }
+  .s-pricing .grid.four { grid-template-columns: repeat(4, 1fr); }
+  .s-pricing .grid.four .cell { min-height: 280px; padding: 40px 32px; }
+  .s-pricing .grid .cell .price .rng {
+    color: var(--dark-ink-soft);
+    font-style: italic;
+    font-weight: 300;
+  }
+  .s-pricing .grid .cell .price {
+    margin-top: auto;
+    font-family: var(--font-serif);
+    font-size: 56px;
+    font-weight: 300;
+    font-style: italic;
+    color: var(--dark-ink);
+    letter-spacing: -0.02em;
+  }
+  .s-pricing .grid .cell .price .ph {
+    font-family: var(--font-mono);
+    font-style: normal;
+    font-size: 24px;
+    color: var(--accent);
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    display: block;
+    margin-top: 8px;
+  }
+  .s-pricing .grid .cell.wrap { background: rgba(168, 70, 42, 0.08); }
+  .s-pricing .grid .cell.wrap .num { color: var(--accent); }
+  .s-pricing .note {
+    font-size: var(--type-small);
+    line-height: 1.4;
+    color: var(--dark-ink-soft);
+    font-style: italic;
+    max-width: 1100px;
+  }
+  .s-pricing .note .em { color: var(--dark-ink); font-style: normal; font-family: var(--font-mono); font-size: 24px; letter-spacing: 0.04em; text-transform: uppercase; }
+
+  /* ============ SLIDE 11: WHY ME ============ */
+  .s-why .body {
+    margin-top: var(--gap-section);
+    flex: 1;
+    display: grid;
+    grid-template-columns: 1fr 1.4fr;
+    gap: 120px;
+    align-items: start;
+  }
+  .s-why h1.title {
+    font-size: 80px;
+    line-height: 1.0;
+    letter-spacing: -0.02em;
+    font-weight: 400;
+  }
+  .s-why h1.title em { color: var(--ink-soft); font-weight: 300; font-style: italic; }
+  .s-why .signature {
+    margin-top: 28px;
+    font-family: var(--font-serif);
+    font-style: italic;
+    font-size: 40px;
+    color: var(--ink);
+    font-weight: 300;
+    letter-spacing: -0.02em;
+    line-height: 1;
+  }
+  .s-why .signature .role {
+    display: block;
+    font-style: normal;
+    font-family: var(--font-mono);
+    font-size: 24px;
+    color: var(--ink-faint);
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    margin-top: 16px;
+  }
+  .s-why .points { display: flex; flex-direction: column; }
+  .s-why .points .pt {
+    padding: 22px 0;
+    border-top: 1px solid var(--rule);
+    display: grid;
+    grid-template-columns: 70px 1fr;
+    gap: 28px;
+    align-items: baseline;
+  }
+  .s-why .points .pt:last-child { border-bottom: 1px solid var(--rule); }
+  .s-why .points .pt .idx {
+    font-family: var(--font-mono);
+    font-size: 24px;
+    color: var(--ink-faint);
+    letter-spacing: 0.04em;
+  }
+  .s-why .points .pt .text {
+    font-size: 28px;
+    line-height: 1.32;
+    color: var(--ink);
+    letter-spacing: -0.01em;
+  }
+  .s-why .points .pt .text em { font-style: italic; color: var(--ink-soft); }
+  .s-why .points .pt .text .strong { color: var(--ink); font-style: normal; }
+
+  /* ============ SLIDE 12: NEXT TWO WEEKS ============ */
+  .s-timeline .body {
+    margin-top: 48px;
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 40px;
+    min-height: 0;
+  }
+  .s-timeline h1.title {
+    font-size: 76px;
+    line-height: 1.0;
+    letter-spacing: -0.02em;
+    font-weight: 400;
+    max-width: 1500px;
+  }
+  .s-timeline h1.title em { color: var(--ink-soft); font-weight: 300; font-style: italic; }
+  .s-timeline .lede {
+    font-size: 28px;
+    line-height: 1.4;
+    font-style: italic;
+    color: var(--ink-soft);
+    max-width: 1100px;
+    letter-spacing: -0.005em;
+  }
+  .s-timeline .weeks {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1.1fr;
+    gap: 0;
+    border-top: 1px solid var(--ink);
+    flex: 1;
+    min-height: 0;
+  }
+  .s-timeline .weeks .wk {
+    padding: 32px 48px 32px 0;
+    border-right: 1px solid var(--rule);
+    display: flex;
+    flex-direction: column;
+    gap: 22px;
+  }
+  .s-timeline .weeks .wk:nth-child(2) { padding-left: 48px; }
+  .s-timeline .weeks .wk:last-child { border-right: none; padding-left: 48px; padding-right: 0; }
+  .s-timeline .weeks .wk .marker {
+    font-family: var(--font-mono);
+    font-size: 24px;
+    color: var(--ink-faint);
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+  }
+  .s-timeline .weeks .wk .marker.outcome { color: var(--accent); }
+  .s-timeline .weeks .wk .label {
+    font-size: 48px;
+    line-height: 1;
+    letter-spacing: -0.025em;
+    font-weight: 400;
+  }
+  .s-timeline .weeks .wk .label em { font-style: italic; color: var(--ink-soft); font-weight: 300; }
+  .s-timeline .weeks .wk ul { display: flex; flex-direction: column; gap: 18px; margin-top: 8px; }
+  .s-timeline .weeks .wk ul li {
+    font-size: 26px;
+    line-height: 1.32;
+    color: var(--ink);
+    letter-spacing: -0.005em;
+    padding-left: 28px;
+    position: relative;
+  }
+  .s-timeline .weeks .wk ul li::before {
+    content: "·";
+    position: absolute;
+    left: 0;
+    top: -8px;
+    color: var(--accent);
+    font-size: 40px;
+    line-height: 1;
+  }
+  .s-timeline .weeks .wk .outcome-text {
+    font-size: 30px;
+    line-height: 1.32;
+    font-style: italic;
+    color: var(--ink);
+    letter-spacing: -0.01em;
+    margin-top: 8px;
+  }
+  .s-timeline .weeks .wk .outcome-text .accent { color: var(--accent); font-style: italic; }
+
+  .s-timeline .closer {
+    border-top: 1px solid var(--rule);
+    padding-top: 28px;
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    gap: 80px;
+  }
+  .s-timeline .closer .sign {
+    font-family: var(--font-serif);
+    font-style: italic;
+    font-size: 32px;
+    color: var(--ink);
+    font-weight: 300;
+    letter-spacing: -0.01em;
+  }
+  .s-timeline .closer .mark {
+    font-family: var(--font-mono);
+    font-size: 24px;
+    color: var(--ink-faint);
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+  }
+
+  /* ============ SLIDE 3: THE OPPORTUNITY (DARK) ============ */
+  .s-thesis { justify-content: space-between; }
+  .s-thesis .thesis {
+    font-size: 116px;
+    line-height: 1.04;
+    letter-spacing: -0.022em;
+    font-weight: 300;
+    max-width: 1500px;
+    margin-top: auto;
+    margin-bottom: auto;
+  }
+  .s-thesis .thesis em { color: var(--accent); font-style: italic; font-weight: 400; }
+  .s-thesis .thesis .soft { color: var(--dark-ink-soft); }
+  .s-thesis .foot {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    gap: 80px;
+  }
+  .s-thesis .foot p {
+    font-size: 34px;
+    line-height: 1.4;
+    color: var(--dark-ink);
+    max-width: 1100px;
+    font-style: italic;
+    font-weight: 300;
+    letter-spacing: -0.005em;
+  }
+  .s-thesis .foot p em { color: var(--accent); font-style: italic; }
+  .s-thesis .foot .marker {
+    font-family: var(--font-mono);
+    font-size: 24px;
+    color: var(--dark-ink-soft);
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+  }
+
+  /* ============ SELECTED WORK — case study slides ============ */
+  /* Override section padding when a slide wants full-bleed imagery. */
+  section.s-work-bleed { padding: 0; }
+  section.s-work-bleed > .meta {
+    position: absolute;
+    top: 40px; left: 60px; right: 60px;
+    z-index: 2;
+  }
+
+  /* Section opener — same rhythm as the dark thesis slide. */
+  .s-work-opener .body {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    margin-top: var(--gap-section);
+  }
+  .s-work-opener .display-italic {
+    font-family: var(--font-serif);
+    font-style: italic;
+    font-weight: 300;
+    font-size: 180px;
+    line-height: 0.94;
+    letter-spacing: -0.03em;
+    color: var(--ink-soft);
+    margin: 0;
+  }
+  .s-work-opener .display-italic .accent { color: var(--accent); font-style: italic; }
+
+  /* Case-study slide common bits. */
+  .case-title {
+    font-family: var(--font-serif);
+    font-style: italic;
+    font-weight: 300;
+    font-size: 88px;
+    line-height: 0.96;
+    letter-spacing: -0.025em;
+    color: var(--ink);
+    margin: 0;
+  }
+  .case-img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: 50% 50%;
+    display: block;
+    background: rgba(26,24,20,0.04);
+  }
+  .case-video-frame {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    background: rgba(26,24,20,0.06);
+    overflow: hidden;
+  }
+  .case-video-frame video {
+    width: 100%; height: 100%;
+    object-fit: cover;
+    display: block;
+    background: #000;
+  }
+  .case-video-fallback {
+    position: absolute; inset: 0;
+    display: flex;
+    align-items: center; justify-content: center;
+    font-family: var(--font-mono);
+    font-size: 22px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--ink-faint);
+    text-align: center;
+    padding: 0 24px;
+    pointer-events: none;
+  }
+  .case-video-frame.has-video .case-video-fallback { display: none; }
+
+  /* Reusable ink title card — terracotta eyebrow + cream serif name. */
+  .case-ink-card {
+    background: var(--dark-bg);
+    color: var(--dark-ink);
+    padding: 48px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    box-sizing: border-box;
+    min-height: 0;
+    overflow: hidden;
+  }
+  .case-ink-card .eyebrow {
+    font-family: var(--font-mono);
+    font-size: 22px;
+    font-weight: 400;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--accent);
+    margin: 0;
+  }
+  .case-ink-card .name {
+    font-family: var(--font-serif);
+    font-weight: 400;
+    font-size: 80px;
+    line-height: 0.94;
+    letter-spacing: -0.02em;
+    color: var(--dark-ink);
+    margin: 0;
+  }
+  .case-ink-card .name em { font-style: italic; font-weight: 300; color: var(--dark-ink-soft); }
+  .case-ink-card.align-right { text-align: right; }
+
+  /* ── Password gate ─────────────────────────────────────────────────── */
+  body.locked deck-stage { visibility: hidden; }
+  body:not(.locked) #gate { display: none; }
+
+  #gate {
+    position: fixed; inset: 0;
+    background: var(--cream);
+    display: flex; flex-direction: column;
+    align-items: center; justify-content: center;
+    z-index: 2147483647;
+    padding: 32px;
+    box-sizing: border-box;
+  }
+  #gate .gate-mark {
+    font-family: var(--font-serif);
+    font-style: italic;
+    font-weight: 300;
+    font-size: clamp(64px, 12vw, 144px);
+    line-height: 0.95;
+    color: var(--ink);
+    margin: 0 0 56px 0;
+    letter-spacing: -0.025em;
+  }
+  #gate form {
+    display: flex; flex-direction: column;
+    align-items: stretch;
+    gap: 16px;
+    width: min(420px, 100%);
+  }
+  #gate label {
+    font-family: var(--font-mono);
+    font-size: 12px;
+    font-weight: 500;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--ink-faint);
+  }
+  #gate input {
+    font-family: var(--font-serif);
+    font-size: 28px;
+    color: var(--ink);
+    background: transparent;
+    border: 0;
+    border-bottom: 1px solid var(--rule);
+    padding: 8px 0 12px 0;
+    outline: none;
+    transition: border-color 0.2s;
+  }
+  #gate input:focus { border-bottom-color: var(--ink); }
+  #gate input.shake { animation: gate-shake 0.4s; border-bottom-color: var(--accent); }
+  #gate .gate-row {
+    display: flex; align-items: center; justify-content: space-between;
+    gap: 24px; margin-top: 8px;
+  }
+  #gate .gate-side {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    font-weight: 500;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--ink-faint);
+  }
+  #gate button {
+    font-family: var(--font-mono);
+    font-size: 13px;
+    font-weight: 500;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--ink);
+    background: transparent;
+    border: 0;
+    cursor: pointer;
+    padding: 8px 0;
+  }
+  #gate button:hover { color: var(--ink-soft); }
+  #gate .gate-err {
+    font-family: var(--font-mono);
+    font-size: 12px;
+    letter-spacing: 0.04em;
+    color: var(--accent);
+    min-height: 1em;
+    opacity: 0;
+    transition: opacity 0.2s;
+  }
+  #gate .gate-err.show { opacity: 1; }
+  #gate .gate-foot {
+    position: absolute;
+    bottom: 32px; left: 0; right: 0;
+    text-align: center;
+    font-family: var(--font-mono);
+    font-size: 11px;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--ink-faint);
+    opacity: 0.8;
+  }
+  @keyframes gate-shake {
+    0%, 100% { transform: translateX(0); }
+    25% { transform: translateX(-6px); }
+    75% { transform: translateX(6px); }
+  }
+</style>
+</head>
+<body class="locked" style="">
+
+<!-- ── Password gate ─────────────────────────────────────────────────── -->
+<div id="gate" role="dialog" aria-label="Password required">
+  <p class="gate-mark">&nbsp;</p>
+  <form id="gate-form" autocomplete="off">
+    <label for="gate-input">Password</label>
+    <input id="gate-input" type="password" autocomplete="current-password" autofocus />
+    <div class="gate-err" id="gate-err">Incorrect password.</div>
+    <div class="gate-row">
+      <span class="gate-side">Proposal · May 2026</span>
+      <button type="submit">Enter →</button>
+    </div>
+  </form>
+  <div class="gate-foot">Confidential.</div>
+</div>
+
+<script type="application/json" id="speaker-notes">
+[
+  "",
+  "",
+  "",
+  "",
+  "",
+  "",
+  "",
+  "",
+  "",
+  "",
+  "",
+  "",
+  "",
+  ""
+]
+</script>
+<deck-stage width="1920" height="1080" style="--deck-rail-w: 188px;" data-om-id="65c09c0e:7">
+
+  <!-- ============== SLIDE 1 — COVER ============== -->
+  <section class="s-cover" data-label="01 Cover" data-om-id="65c09c0e:8" data-screen-label="01 01 Cover" data-om-validate="no_overflowing_text,no_overlapping_text,slide_sized_text" data-deck-slide="0">
+    <div class="meta" data-om-id="65c09c0e:9">
+      <div class="left" data-om-id="65c09c0e:10"><span class="num" data-om-id="65c09c0e:11">01</span><span data-om-id="65c09c0e:12">Proposal</span></div>
+      <div data-om-id="65c09c0e:13">Confidential</div>
+    </div>
+
+    <div data-om-id="65c09c0e:14">
+      <h1 class="cover-title" data-om-id="65c09c0e:15">LumiDB<span class="x" data-om-id="65c09c0e:16">×</span>Henrik&nbsp;Axlund</h1>
+      <p class="cover-sub" data-om-id="65c09c0e:17">An offer, following our two conversations.</p>
+    </div>
+
+    <div class="cover-bottom" data-om-id="65c09c0e:18">
+      <div class="col" data-om-id="65c09c0e:19">
+        <div class="label" data-om-id="65c09c0e:20">Prepared by</div>
+        <div class="val" data-om-id="65c09c0e:21">Henrik Axlund</div>
+        <div data-om-id="65c09c0e:22">May 2026</div>
+      </div>
+      <div class="col" data-om-id="65c09c0e:23">
+        <div class="label" data-om-id="65c09c0e:24">For</div>
+        <div class="val" data-om-id="65c09c0e:25">The LumiDB founders</div>
+      </div>
+      <div class="col" data-om-id="65c09c0e:26">
+        <div class="label" data-om-id="65c09c0e:27">Email</div>
+        <div class="val" data-om-id="65c09c0e:28">henrik.axlund@gmail.com</div>
+      </div>
+      <div class="col" data-om-id="65c09c0e:29">
+        <div class="label" data-om-id="65c09c0e:30">Phone</div>
+        <div class="val" data-om-id="65c09c0e:31">+358 45 651 1808</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============== SLIDE 2 — CONTEXT ============== -->
+  <section class="s-context" data-label="02 Context" data-om-id="65c09c0e:32" data-screen-label="02 02 Context" data-om-validate="no_overflowing_text,no_overlapping_text,slide_sized_text" data-deck-slide="1">
+    <div class="meta" data-om-id="65c09c0e:33">
+      <div class="left" data-om-id="65c09c0e:34"><span class="num" data-om-id="65c09c0e:35">02</span><span data-om-id="65c09c0e:36">Context</span></div>
+      <div data-om-id="65c09c0e:37">The status and my proposal</div>
+    </div>
+
+    <div class="body" data-om-id="65c09c0e:38">
+      <h1 class="title" data-om-id="65c09c0e:39">Where you are <em data-om-id="65c09c0e:40">right now.</em></h1>
+      <div class="prose" data-om-id="65c09c0e:41">
+        <p data-om-id="65c09c0e:42">The product is working. The partnerships — Esri, Terrasolid, Pointly, Infrakit — are landed.</p>
+        <p data-om-id="65c09c0e:43">Your first real go-to-market wedge is taking shape: surveyors as a defined segment, a 1,400-company list ready to work.</p>
+        <p class="closer" data-om-id="65c09c0e:44">The gap is not the tech and not the strategy. <span class="em" data-om-id="65c09c0e:45">It is the voice, the story, and the content engine</span> that turns this position into in-bound leads.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============== SLIDE 3 — THE PROPOSAL ============== -->
+  <section class="s-proposal" data-label="03 The proposal" data-om-id="65c09c0e:46" data-screen-label="03 03 The proposal" data-om-validate="no_overflowing_text,no_overlapping_text,slide_sized_text" data-deck-slide="2">
+    <div class="meta" data-om-id="65c09c0e:47">
+      <div class="left" data-om-id="65c09c0e:48"><span class="num" data-om-id="65c09c0e:49">03</span><span data-om-id="65c09c0e:50">The proposal</span></div>
+      <div data-om-id="65c09c0e:51">Four work areas + one wrapper</div>
+    </div>
+
+    <div class="body" data-om-id="65c09c0e:52">
+      <div data-om-id="65c09c0e:53">
+        <h1 class="title" data-om-id="65c09c0e:54">What I am <em data-om-id="65c09c0e:55">proposing.</em></h1>
+        <p class="lede" style="" data-om-id="65c09c0e:56"><span class="a_GcMg font-feature-liga-off font-feature-clig-off font-feature-calt-off text-decoration-none text-strikethrough-none" style="color: rgba(90,85,75,var(--O42jJQ,1)); caret-color: rgb(90, 85, 75); --Ys-XuQ: none; font-kerning: none;" data-om-id="65c09c0e:57">Each piece of work available on its own or within a fractional engagement.</span></p>
+      </div>
+
+      <div class="list" data-om-id="65c09c0e:58">
+        <div class="row" data-om-id="65c09c0e:59">
+          <div class="idx" data-om-id="65c09c0e:60">i.</div>
+          <div class="name" data-om-id="65c09c0e:61">Messaging foundation<span class="sub" data-om-id="65c09c0e:62">Upstream workshop and document.</span></div>
+          <div class="form" data-om-id="65c09c0e:63">Project</div>
+        </div>
+        <div class="row" data-om-id="65c09c0e:64">
+          <div class="idx" data-om-id="65c09c0e:65">ii.</div>
+          <div class="name" data-om-id="65c09c0e:66">Surveyor messaging<span class="sub" data-om-id="65c09c0e:67">The foundation applied to the chosen segment.</span></div>
+          <div class="form" data-om-id="65c09c0e:68">Project</div>
+        </div>
+        <div class="row" data-om-id="65c09c0e:69">
+          <div class="idx" data-om-id="65c09c0e:70">iii.</div>
+          <div class="name" data-om-id="65c09c0e:71">Product film<span class="sub" data-om-id="65c09c0e:72">Homepage hero, 60–90s, with optional brand visual assets.</span></div>
+          <div class="form" data-om-id="65c09c0e:73">Project</div>
+        </div>
+        <div class="row" data-om-id="65c09c0e:74">
+          <div class="idx" data-om-id="65c09c0e:75">iv.</div>
+          <div class="name" data-om-id="65c09c0e:76">Video content engine<span class="sub" data-om-id="65c09c0e:77">Built once, handed over — YouTube, LinkedIn, site, sales.</span></div>
+          <div class="form" data-om-id="65c09c0e:78">Project</div>
+        </div>
+        <div class="row wrap" data-om-id="65c09c0e:79">
+          <div class="idx" data-om-id="65c09c0e:80">+</div>
+          <div class="name" data-om-id="65c09c0e:81">Fractional, two days a week<span class="sub" style="font-style: normal; color: var(--ink-soft);" data-om-id="65c09c0e:82">All of the above, plus strategy, social facilitation, and SEO &amp; AI search oversight.</span></div>
+          <div class="form" data-om-id="65c09c0e:83">Wrapper</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============== SLIDE 4 — THE OPPORTUNITY (DARK) ============== -->
+  <section class="s-thesis dark" data-label="04 The opportunity" data-om-id="65c09c0e:84" data-screen-label="04 04 The opportunity" data-om-validate="no_overflowing_text,no_overlapping_text,slide_sized_text" data-deck-slide="3">
+    <div class="meta" data-om-id="65c09c0e:85">
+      <div class="left" data-om-id="65c09c0e:86"><span class="num" data-om-id="65c09c0e:87">04</span><span data-om-id="65c09c0e:88">The opportunity</span></div>
+      <div data-om-id="65c09c0e:89">One-line thesis</div>
+    </div>
+
+    <h1 class="thesis" data-om-id="65c09c0e:90">
+      Clear messaging first — <em data-om-id="65c09c0e:91">then everything downstream compounds.</em>
+    </h1>
+
+    <div class="foot" data-om-id="65c09c0e:92">
+      <p style="" data-om-id="65c09c0e:93">Product film &amp; video channel content, surveyor outreach, A/SEO —<span style="color: rgb(151, 76, 50);" data-om-id="65c09c0e:94"> all drawn from the same source.</span> Without it, <em style="color: rgb(236, 232, 221);" data-om-id="65c09c0e:95">every asset re-negotiates positioning from scratch.</em> With it, we move fast and with precision.</p>
+      <span class="marker" data-om-id="65c09c0e:96">⟶ continued</span>
+    </div>
+  </section>
+
+  <!-- ============== SLIDE 5 — MESSAGING FOUNDATION ============== -->
+  <section class="s-brief" data-label="05 Messaging foundation" data-om-id="65c09c0e:97" data-screen-label="05 05 Messaging foundation" data-om-validate="no_overflowing_text,no_overlapping_text,slide_sized_text" data-deck-slide="4">
+    <div class="meta" data-om-id="65c09c0e:98">
+      <div class="left" data-om-id="65c09c0e:99"><span class="num" data-om-id="65c09c0e:100">05</span><span data-om-id="65c09c0e:101">Messaging foundation</span></div>
+      <div data-om-id="65c09c0e:102">Work area i.</div>
+    </div>
+
+    <div class="body" data-om-id="65c09c0e:103">
+      <div data-om-id="65c09c0e:104">
+        <h1 class="title" data-om-id="65c09c0e:105">Messaging foundation.</h1>
+        <p class="lede" style="margin-top: 36px;" data-om-id="65c09c0e:106">The upstream deliverable that unlocks everything else.&nbsp;</p>
+      </div>
+
+      <div class="threecol" data-om-id="65c09c0e:107">
+        <div class="col" data-om-id="65c09c0e:108">
+          <h3 data-om-id="65c09c0e:109"><span class="lbl-num" data-om-id="65c09c0e:110">01</span>What you get</h3>
+          <p data-om-id="65c09c0e:111">A messaging deck with hierarchy, built on current assets, positioning &amp; strategy.</p>
+          <p data-om-id="65c09c0e:112"><em style="" data-om-id="65c09c0e:113"></em> with supporting messages, reason to believe, and proof points.</p>
+          <p data-om-id="65c09c0e:114">Current tone of voice defined.</p>
+        </div>
+        <div class="col" data-om-id="65c09c0e:115">
+          <h3 data-om-id="65c09c0e:116"><span class="lbl-num" data-om-id="65c09c0e:117">02</span>What it takes</h3>
+          <p data-om-id="65c09c0e:118">Half-day workshop, facilitated by Henrik and Riina.</p>
+          <p data-om-id="65c09c0e:119"><em data-om-id="65c09c0e:120">Eight workdays over two weeks.</em></p>
+        </div>
+        <div class="col" data-om-id="65c09c0e:121">
+          <h3 data-om-id="65c09c0e:122"><span class="lbl-num" data-om-id="65c09c0e:123">03</span>What it unlocks</h3>
+          <p data-om-id="65c09c0e:124">The product film script.</p>
+          <p data-om-id="65c09c0e:125">Video content direction.</p>
+          <p data-om-id="65c09c0e:126">Surveyor outreach assets.</p>
+          <p data-om-id="65c09c0e:127">The A/SEO content plan.</p>
+          <p data-om-id="65c09c0e:128">Campaign landing pages.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============== SLIDE 6 — SURVEYOR MESSAGING ============== -->
+  <section class="s-brief paper" data-label="06 Surveyor messaging" data-om-id="65c09c0e:129" data-screen-label="06 06 Surveyor messaging" data-om-validate="no_overflowing_text,no_overlapping_text,slide_sized_text" data-deck-slide="5">
+    <div class="meta" data-om-id="65c09c0e:130">
+      <div class="left" data-om-id="65c09c0e:131"><span class="num" data-om-id="65c09c0e:132">06</span><span data-om-id="65c09c0e:133">Surveyor messaging</span></div>
+      <div data-om-id="65c09c0e:134">Work area ii.</div>
+    </div>
+
+    <div class="body" data-om-id="65c09c0e:135">
+      <div data-om-id="65c09c0e:136">
+        <h1 class="title" data-om-id="65c09c0e:137">Surveyor <em data-om-id="65c09c0e:138">messaging &amp; strategy.</em></h1>
+        <p class="lede" style="margin-top: 36px;" data-om-id="65c09c0e:139"><span class="a_GcMg font-feature-liga-off font-feature-clig-off font-feature-calt-off text-decoration-none text-strikethrough-none" style="color: rgba(26,24,20,var(--O42jJQ,1)); caret-color: rgb(26, 24, 20); --Ys-XuQ: none; font-kerning: none;" data-om-id="65c09c0e:140">Messaging built for the segment we are going after, communicating relevant benefits.</span></p>
+      </div>
+
+      <div class="threecol" data-om-id="65c09c0e:141">
+        <div class="col" data-om-id="65c09c0e:142">
+          <h3 data-om-id="65c09c0e:143"><span class="lbl-num" data-om-id="65c09c0e:144">01</span>What you get</h3>
+          <p data-om-id="65c09c0e:145"><em data-om-id="65c09c0e:146">Three segment messages</em> with supporting messages, reason to believe, and proof points.</p>
+          <p data-om-id="65c09c0e:147">Language to use — and language to avoid — for surveyors.</p>
+          <p data-om-id="65c09c0e:148">Audience pain and proof point mapping.</p>
+        </div>
+        <div class="col" data-om-id="65c09c0e:149">
+          <h3 data-om-id="65c09c0e:150"><span class="lbl-num" data-om-id="65c09c0e:151">02</span>What it takes</h3>
+          <p data-om-id="65c09c0e:152">Half-day workshop, facilitated by Henrik and Riina.</p>
+          <p data-om-id="65c09c0e:153">Five workdays over ~2 weeks.</p>
+          <p style="margin-top: 24px; font-style: italic; color: var(--ink-soft);" data-om-id="65c09c0e:154">The messaging foundation in place.</p>
+        </div>
+        <div class="col" data-om-id="65c09c0e:155">
+          <h3 data-om-id="65c09c0e:156"><span class="lbl-num" data-om-id="65c09c0e:157">03</span>What it unlocks</h3>
+          <p data-om-id="65c09c0e:158"><em data-om-id="65c09c0e:159">The surveyor campaign.</em></p>
+          <p data-om-id="65c09c0e:160">Asset creation across multiple channels to attract, engage and convert the 1,400 companies — landing page, video content, direct outreach.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============== SLIDE 7 — PRODUCT FILM ============== -->
+  <section class="s-brief s-product" data-label="07 Product film" data-om-id="65c09c0e:161" data-screen-label="07 07 Product film" data-om-validate="no_overflowing_text,no_overlapping_text,slide_sized_text" data-deck-slide="6">
+    <div class="meta" data-om-id="65c09c0e:162">
+      <div class="left" data-om-id="65c09c0e:163"><span class="num" data-om-id="65c09c0e:164">07</span><span data-om-id="65c09c0e:165">Product film</span></div>
+      <div data-om-id="65c09c0e:166">Work area iii.</div>
+    </div>
+
+    <div class="body" data-om-id="65c09c0e:167">
+      <div data-om-id="65c09c0e:168">
+        <h1 class="title" data-om-id="65c09c0e:169">Product <em data-om-id="65c09c0e:170">film.</em></h1>
+        <p class="lede" style="margin-top: 28px;" data-om-id="65c09c0e:171">The homepage hero, for the <em data-om-id="65c09c0e:172">product brand</em> — not a founder story. With brand visuals available as a companion deliverable.</p>
+      </div>
+
+      <div class="threecol product-cols" data-om-id="65c09c0e:173">
+        <div class="col" data-om-id="65c09c0e:174">
+          <h3 data-om-id="65c09c0e:175"><span class="lbl-num" data-om-id="65c09c0e:176">01</span>What you get</h3>
+          <p data-om-id="65c09c0e:177">One finished product film, 60–90 seconds, plus a cutdown for social in <em data-om-id="65c09c0e:178">two aspect ratios.</em></p>
+          <p class="addon-rule" data-om-id="65c09c0e:179"><em class="addon-label" data-om-id="65c09c0e:180">Optional add-on</em></p>
+          <p data-om-id="65c09c0e:181">A library of <em data-om-id="65c09c0e:182">brand visual assets</em> produced alongside the film — roughly ten stills and short looping animations.</p>
+          <p style="font-style: italic; color: var(--ink-soft);" data-om-id="65c09c0e:183">The production already generates the raw material.</p>
+          <p class="addon-rule" data-om-id="65c09c0e:198"><em class="addon-label" data-om-id="65c09c0e:199">Optional add-on</em></p>
+          <p data-om-id="65c09c0e:200"><em data-om-id="ed08d1da:187">Technical video,</em> two to three minutes.</p>
+        </div>
+        <div class="col" data-om-id="65c09c0e:184">
+          <h3 data-om-id="65c09c0e:185"><span class="lbl-num" data-om-id="65c09c0e:186">02</span>What it takes</h3>
+          <p data-om-id="65c09c0e:187">The messaging foundation completed.</p>
+          <p data-om-id="65c09c0e:188"><em data-om-id="65c09c0e:189">In-house production.</em> Fifteen to twenty workdays over four to six weeks.</p>
+          <p data-om-id="65c09c0e:204"><em data-om-id="ed08d1da:195">Outsourced production</em> for the technical video. Five to seven workdays plus production budget, over four to six weeks.</p>
+          <p style="font-style: italic; color: var(--ink-soft);" data-om-id="65c09c0e:190">Specialty skills like sound design and color grading are outsourced.</p>
+        </div>
+        <div class="col" data-om-id="65c09c0e:191">
+          <h3 data-om-id="65c09c0e:192"><span class="lbl-num" data-om-id="65c09c0e:193">03</span>What it unlocks</h3>
+          <p data-om-id="65c09c0e:194">The homepage stops doing the explaining work alone.</p>
+          <p data-om-id="65c09c0e:195">The film carries weight in <em data-om-id="65c09c0e:196">cold outreach, events, and partner conversations.</em></p>
+          <p style="margin-top: 18px; font-style: italic; color: var(--ink-soft);" data-om-id="65c09c0e:197">With the asset add-on, the site and social stop looking like a technical product page — and start looking like a brand worth paying attention to.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============== SLIDE 8 — VIDEO CONTENT ENGINE ============== -->
+  <section class="s-pipeline" data-label="08 Video content engine" data-om-id="65c09c0e:205" data-screen-label="08 08 Video content engine" data-om-validate="no_overflowing_text,no_overlapping_text,slide_sized_text" data-deck-slide="7">
+    <div class="meta" data-om-id="65c09c0e:206">
+      <div class="left" data-om-id="65c09c0e:207"><span class="num" data-om-id="65c09c0e:208">08</span><span data-om-id="65c09c0e:209">Video content engine</span></div>
+      <div data-om-id="65c09c0e:210">Work area iv.</div>
+    </div>
+
+    <div class="body" data-om-id="65c09c0e:211">
+      <div data-om-id="65c09c0e:212">
+        <h1 class="title" data-om-id="65c09c0e:213">Video content engine.</h1>
+        <p class="lede" style="margin-top: 28px;" data-om-id="65c09c0e:214"></p>
+      </div>
+
+      <div class="sketch" data-om-id="65c09c0e:216">
+        <svg viewBox="0 0 1880 380" preserveAspectRatio="xMidYMid meet" xmlns="http://www.w3.org/2000/svg" data-om-id="65c09c0e:217">
+          <defs data-om-id="65c09c0e:218">
+            <marker id="arrow-clean" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse" data-om-id="65c09c0e:219">
+              <path d="M 0 0 L 10 5 L 0 10 z" fill="#1A1814" data-om-id="65c09c0e:220"></path>
+            </marker>
+          </defs>
+
+          <!-- 5 boxes — wider gaps for breathing room, pushed down -->
+          <g fill="none" stroke="#1A1814" stroke-width="1.4" data-om-id="65c09c0e:223">
+            <rect x="40" y="140" width="280" height="180" data-om-id="65c09c0e:224"></rect>
+            <rect x="420" y="140" width="280" height="180" data-om-id="65c09c0e:225"></rect>
+            <rect x="800" y="140" width="280" height="180" data-om-id="65c09c0e:226"></rect>
+            <rect x="1180" y="140" width="280" height="180" data-om-id="65c09c0e:227"></rect>
+            <rect x="1560" y="140" width="280" height="180" data-om-id="65c09c0e:228"></rect>
+          </g>
+
+          <!-- forward arrows -->
+          <g fill="none" stroke="#1A1814" stroke-width="1.4" data-om-id="65c09c0e:229">
+            <line x1="328" y1="230" x2="412" y2="230" marker-end="url(#arrow-clean)" data-om-id="65c09c0e:230"></line>
+            <line x1="708" y1="230" x2="792" y2="230" marker-end="url(#arrow-clean)" data-om-id="65c09c0e:231"></line>
+            <line x1="1088" y1="230" x2="1172" y2="230" marker-end="url(#arrow-clean)" data-om-id="65c09c0e:232"></line>
+            <line x1="1468" y1="230" x2="1552" y2="230" marker-end="url(#arrow-clean)" data-om-id="65c09c0e:233"></line>
+          </g>
+
+          <!-- step numbers (top-left of each box) -->
+          <g font-family="Geist Mono, monospace" font-size="24" fill="#8A8170" letter-spacing="1.5" data-om-id="65c09c0e:234">
+            <text x="60" y="180" data-om-id="65c09c0e:235">01</text>
+            <text x="440" y="180" data-om-id="65c09c0e:236">02</text>
+            <text x="820" y="180" data-om-id="65c09c0e:237">03</text>
+            <text x="1200" y="180" data-om-id="65c09c0e:238">04</text>
+            <text x="1580" y="180" data-om-id="65c09c0e:239">05</text>
+          </g>
+
+          <!-- big italic names (center of each box) -->
+          <g font-family="Newsreader, serif" font-size="40" font-style="italic" fill="#1A1814" text-anchor="middle" data-om-id="65c09c0e:240">
+            <text x="180" y="242" data-om-id="65c09c0e:241">a thought</text>
+            <text x="560" y="242" data-om-id="65c09c0e:242">script</text>
+            <text x="940" y="242" data-om-id="65c09c0e:243">shoot</text>
+            <text x="1320" y="242" data-om-id="65c09c0e:244">edit</text>
+            <text x="1700" y="242" data-om-id="65c09c0e:245">publish</text>
+          </g>
+
+          <!-- small captions (bottom of each box) -->
+          <g font-family="Geist Mono, monospace" font-size="24" fill="#8A8170" letter-spacing="1.5" text-anchor="middle" data-om-id="65c09c0e:246">
+            <text x="180" y="294" data-om-id="65c09c0e:247">BLOG · NOTE</text>
+            <text x="560" y="294" data-om-id="65c09c0e:248">AI-ASSISTED</text>
+            <text x="940" y="294" data-om-id="65c09c0e:249">LEAN SETUP</text>
+            <text x="1320" y="294" data-om-id="65c09c0e:250">AI-ASSISTED</text>
+            <text x="1700" y="294" data-om-id="65c09c0e:251">YT · LI · WEB</text>
+          </g>
+        </svg>
+      </div>
+
+      <div class="legend" data-om-id="65c09c0e:254">
+        <div class="col" data-om-id="65c09c0e:255">
+          <h4 data-om-id="65c09c0e:256"><span class="lbl-num" data-om-id="65c09c0e:257">01</span>What you get</h4>
+          <p data-om-id="65c09c0e:258">A lean AI-assisted production pipeline.</p>
+          <p data-om-id="65c09c0e:259">An editorial calendar tied to the messaging foundation.</p>
+          <p data-om-id="65c09c0e:260">YouTube channel setup and initial population.</p>
+          <p data-om-id="65c09c0e:261">A first batch of <em data-om-id="65c09c0e:262">three videos.</em></p>
+        </div>
+        <div class="col" data-om-id="65c09c0e:263">
+          <h4 data-om-id="65c09c0e:264"><span class="lbl-num" data-om-id="65c09c0e:265">02</span>What it takes</h4>
+          <p data-om-id="65c09c0e:266"><em data-om-id="65c09c0e:267">Setup.</em> Six to eight workdays over two weeks.</p>
+          <p data-om-id="65c09c0e:268"><em data-om-id="65c09c0e:269">First three videos.</em> Two workdays over two weeks.</p>
+          <p style="font-style: italic; color: var(--ink-soft);" data-om-id="65c09c0e:270">Then a decision: who runs it after handover — the current team with the system in place, or Henrik fractionally.</p>
+        </div>
+        <div class="col" data-om-id="65c09c0e:271">
+          <h4 data-om-id="65c09c0e:272"><span class="lbl-num" data-om-id="65c09c0e:273">03</span>What it unlocks</h4>
+          <p data-om-id="65c09c0e:274">Blog posts become videos without re-writing.</p>
+          <p data-om-id="65c09c0e:275">Thinking compounds across formats.</p>
+          <p style="font-style: italic; color: var(--ink-soft);" data-om-id="65c09c0e:276">The channels become living assets, not graveyards.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============== SLIDE 9 — FRACTIONAL ============== -->
+  <section class="s-fractional" data-label="09 Fractional, 2 days a week" data-om-id="65c09c0e:277" data-screen-label="09 09 Fractional, 2 days a week" data-om-validate="no_overflowing_text,no_overlapping_text,slide_sized_text" data-deck-slide="8">
+    <div class="meta" data-om-id="65c09c0e:278">
+      <div class="left" data-om-id="65c09c0e:279"><span class="num" data-om-id="65c09c0e:280">09</span><span data-om-id="65c09c0e:281">Fractional</span></div>
+      <div data-om-id="65c09c0e:282">The wrapper</div>
+    </div>
+
+    <div class="body" data-om-id="65c09c0e:283">
+      <div data-om-id="65c09c0e:284">
+        <h1 class="title" data-om-id="65c09c0e:285">Fractional, <em data-om-id="65c09c0e:286">two days a week.</em></h1>
+        <p class="lede" data-om-id="65c09c0e:287">I work as a team member, <em data-om-id="65c09c0e:288">unlocking additional value.</em></p>
+        <div class="stamp price-stamp" data-om-id="65c09c0e:289">
+          <div class="big" data-om-id="65c09c0e:290">€8,000<span style="font-style: normal; font-size: 36px; color: var(--ink-soft); letter-spacing: 0; margin-left: 4px;" data-om-id="65c09c0e:291">+ ALV / month</span></div>
+          <div data-om-id="65c09c0e:292">2 DAYS / WEEK &nbsp;·&nbsp; 6 MONTHS</div>
+        </div>
+      </div>
+
+      <ul class="includes" data-om-id="65c09c0e:293">
+        <li data-om-id="65c09c0e:294"><span class="mark" data-om-id="65c09c0e:295">+</span><span class="text" data-om-id="65c09c0e:296">All project deliverables above — messaging, product film, video engine.</span></li>
+        <li data-om-id="65c09c0e:298"><span class="mark" data-om-id="65c09c0e:299">+</span><span class="text" data-om-id="65c09c0e:300">Ongoing strategy where the product roadmap meets the market.</span></li>
+        <li data-om-id="65c09c0e:301"><span class="mark" data-om-id="65c09c0e:302">+</span><span class="text" data-om-id="65c09c0e:303">Social media facilitation and strategy — not execution.</span></li>
+        <li data-om-id="65c09c0e:305"><span class="mark" data-om-id="65c09c0e:306">+</span><span class="text" data-om-id="65c09c0e:307">SEO and AI search optimization oversight — the long game, not a one-off.</span></li>
+        <li data-om-id="65c09c0e:309"><span class="mark" data-om-id="65c09c0e:310">+</span><span class="text" data-om-id="65c09c0e:311">Presence in your week — also at the office as agreed.</span></li>
+      </ul>
+
+      <p class="fractional-footer" data-om-id="65c09c0e:312"></p>
+    </div>
+  </section>
+
+  <!-- ============== SLIDE 10 — PRICING (DARK) ============== -->
+  <section class="s-pricing dark" data-label="10 Pricing" data-om-id="65c09c0e:314" data-screen-label="10 10 Pricing" data-om-validate="no_overflowing_text,no_overlapping_text,slide_sized_text" data-deck-slide="9">
+    <div class="meta" data-om-id="65c09c0e:315">
+      <div class="left" data-om-id="65c09c0e:316"><span class="num" data-om-id="65c09c0e:317">10</span><span data-om-id="65c09c0e:318">Pricing</span></div>
+      <div data-om-id="65c09c0e:319">Project rates</div>
+    </div>
+
+    <div class="body" data-om-id="65c09c0e:320">
+      <div data-om-id="65c09c0e:321">
+        <h1 class="title" data-om-id="65c09c0e:322">Pricing.</h1>
+        <p class="lede" style="margin-top: 28px;" data-om-id="65c09c0e:323"><em style="color: var(--dark-ink-soft); font-style: italic;" data-om-id="65c09c0e:324">Four project rates.</em></p>
+      </div>
+
+      <div class="grid four" data-om-id="65c09c0e:325">
+        <div class="cell" data-om-id="65c09c0e:326">
+          <div class="num" data-om-id="65c09c0e:327">i.</div>
+          <div class="label" data-om-id="65c09c0e:328">Messaging foundation<em data-om-id="65c09c0e:329">Workshop + document</em></div>
+          <div class="price" data-om-id="65c09c0e:330">€9,600</div>
+        </div>
+        <div class="cell" data-om-id="65c09c0e:331">
+          <div class="num" data-om-id="65c09c0e:332">ii.</div>
+          <div class="label" data-om-id="65c09c0e:333">Surveyor messaging<em data-om-id="65c09c0e:334">Segment document + outreach starts</em></div>
+          <div class="price" data-om-id="65c09c0e:335">€6,000</div>
+        </div>
+        <div class="cell" data-om-id="65c09c0e:336">
+          <div class="num" data-om-id="65c09c0e:337">iii.</div>
+          <div class="label" data-om-id="65c09c0e:338">Product film<em data-om-id="65c09c0e:339">60–90s, with optional brand visual assets</em></div>
+          <div class="price" style="" data-om-id="65c09c0e:340">€15,000<span class="rng" style="color: rgb(236, 232, 221);" data-om-id="65c09c0e:341">–25,000</span></div>
+        </div>
+        <div class="cell" data-om-id="65c09c0e:342">
+          <div class="num" data-om-id="65c09c0e:343">iv.</div>
+          <div class="label" data-om-id="65c09c0e:344">Video content engine<em data-om-id="65c09c0e:345">Pipeline + first batch</em></div>
+          <div class="price" data-om-id="65c09c0e:346">€12,000<span class="rng" style="color: rgb(236, 232, 221);" data-om-id="65c09c0e:347">–14,000</span></div>
+        </div>
+      </div>
+
+      <p class="note" data-om-id="65c09c0e:348"><span class="em" data-om-id="65c09c0e:349">Add-ons.</span> &nbsp; €5,000 – €20,000 depending on scope.</p>
+    </div>
+  </section>
+
+  <!-- ============== SLIDE 11 — WHY ME ============== -->
+  <section class="s-why" data-label="11 Why me" data-om-id="65c09c0e:350" data-screen-label="12 11 Why me" data-om-validate="no_overflowing_text,no_overlapping_text,slide_sized_text" data-deck-slide="11">
+    <div class="meta" data-om-id="65c09c0e:351">
+      <div class="left" data-om-id="65c09c0e:352"><span class="num" data-om-id="65c09c0e:353">11</span><span data-om-id="65c09c0e:354">Why me</span></div>
+      <div data-om-id="65c09c0e:355">Short</div>
+    </div>
+
+    <div class="body" data-om-id="65c09c0e:356">
+      <div data-om-id="65c09c0e:357">
+        <h1 class="title" data-om-id="65c09c0e:358">Why <em data-om-id="65c09c0e:359">me.</em><br data-om-id="65c09c0e:360">Henrik Axlund.</h1>
+        <div class="signature" data-om-id="65c09c0e:361">
+          <span class="role" data-om-id="65c09c0e:362">Techno Beat Oy — Helsinki</span>
+        </div>
+      </div>
+
+      <div class="points" data-om-id="65c09c0e:363">
+        <div class="pt" data-om-id="65c09c0e:364">
+          <span class="idx" data-om-id="65c09c0e:365">i.</span>
+          <span class="text" data-om-id="65c09c0e:366">You already know how I work. <em data-om-id="65c09c0e:367">We have shipped together before.</em></span>
+        </div>
+        <div class="pt" data-om-id="65c09c0e:368">
+          <span class="idx" data-om-id="65c09c0e:369">ii.</span>
+          <span class="text" data-om-id="65c09c0e:370"><span class="strong" data-om-id="65c09c0e:371">13 years</span> co-running MacWell.</span>
+        </div>
+        <div class="pt" data-om-id="65c09c0e:372">
+          <span class="idx" data-om-id="65c09c0e:373">iii.</span>
+          <span class="text" data-om-id="65c09c0e:374">Background in animation, film, and brand — <em data-om-id="65c09c0e:375">30 years before AI-assisted workflows became the lever.</em></span>
+        </div>
+        <div class="pt" data-om-id="65c09c0e:376">
+          <span class="idx" data-om-id="65c09c0e:377">iv.</span>
+          <span class="text" data-om-id="65c09c0e:378">Working with <span class="strong" data-om-id="65c09c0e:379">Riina</span> on the strategy and messaging <em data-om-id="65c09c0e:380">adds great value.</em></span>
+        </div>
+      </div>
+    </div>
+  </section><section class="s-work-opener" data-label="12 Selected work" data-om-id="65c09c0e:381" data-screen-label="11 12 Selected work" data-om-validate="no_overflowing_text,no_overlapping_text,slide_sized_text" data-deck-slide="10">
+    <div class="meta" data-om-id="65c09c0e:382">
+      <div class="left" data-om-id="65c09c0e:383"><span class="num" data-om-id="65c09c0e:384">12</span><span data-om-id="65c09c0e:385">Selected work</span></div>
+      <div data-om-id="65c09c0e:386"></div>
+    </div>
+
+    <div class="body" data-om-id="65c09c0e:387">
+      <p class="display-italic" data-om-id="65c09c0e:388">Selected&nbsp;work.</p>
+    </div>
+  </section>
+
+  <!-- ============== SLIDE 12 — SELECTED WORK (opener) ============== -->
+  <section class="s-work-bleed" data-label="13 Complicated products" data-om-id="65c09c0e:389" data-screen-label="13 13 Complicated products" data-om-validate="no_overflowing_text,no_overlapping_text,slide_sized_text" data-deck-slide="12">
+    <div class="meta" data-om-id="65c09c0e:390">
+      <div class="left" data-om-id="65c09c0e:391"><span class="num" data-om-id="65c09c0e:392">13</span><span data-om-id="65c09c0e:393">
+</span></div>
+      <div data-om-id="65c09c0e:394">
+</div>
+    </div>
+
+    <div style="display: grid; grid-template-columns: 1152px 1fr; grid-template-rows: 100%; gap: 0; height: 100%; padding: 0; box-sizing: border-box;" data-om-id="65c09c0e:395">
+      <div style="padding: 130px 32px 90px 90px; display: grid; grid-template-rows: auto minmax(0, 1.4fr) minmax(0, 1fr); gap: 16px; box-sizing: border-box; min-height: 0; overflow: hidden;" data-om-id="65c09c0e:396">
+        <p class="case-title" style="padding: 0px" data-om-id="65c09c0e:397">Complicated <em data-om-id="65c09c0e:398">products.</em></p>
+        <img class="case-img" src="images/c11-b.webp" alt="" data-om-id="65c09c0e:399">
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px; min-height: 0;" data-om-id="65c09c0e:400">
+          <img class="case-img" src="images/c11-c.webp" alt="" data-om-id="65c09c0e:401">
+          <img class="case-img" src="images/c11-d.webp" alt="" style="object-position: 50% 75%;" data-om-id="65c09c0e:402">
+        </div>
+      </div>
+
+      <div class="case-video-frame" data-om-id="65c09c0e:403">
+        <video data-slide-video="" data-src="../clients.mp4" muted="" loop="" playsinline="" preload="metadata" data-om-id="65c09c0e:404"></video>
+        <div class="case-video-fallback" data-om-id="65c09c0e:405">clients.mp4</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============== SLIDE 13 — COMPLICATED PRODUCTS ============== -->
+  
+
+  <!-- ============== SLIDE 14 — COMPLICATED PRODUCTS (continued) ============== -->
+  <section class="s-work-bleed" data-label="14 Complicated products II" data-om-id="65c09c0e:406" data-screen-label="14 14 Complicated products II" data-om-validate="no_overflowing_text,no_overlapping_text,slide_sized_text" data-deck-slide="13" data-deck-active="">
+    <div class="meta" data-om-id="65c09c0e:407">
+      <div class="left" data-om-id="65c09c0e:408"><span class="num" data-om-id="65c09c0e:409">14</span><span data-om-id="65c09c0e:410">
+</span></div>
+      <div data-om-id="65c09c0e:411"></div>
+    </div>
+
+    <div style="display: grid; grid-template-columns: repeat(12, minmax(0, 1fr)); grid-template-rows: repeat(12, minmax(0, 1fr)); gap: 12px; height: 100%; padding: 0; box-sizing: border-box; overflow: hidden;" data-om-id="65c09c0e:412">
+
+      <div class="case-ink-card" style="grid-area: 1 / 1 / 5 / 5; padding-top: 80px;" data-om-id="65c09c0e:413">
+        <p class="name" data-om-id="65c09c0e:414"><em data-om-id="65c09c0e:415">A through-line.</em></p>
+      </div>
+
+      <div class="case-video-frame" style="grid-area: 1 / 5 / 8 / 13;" data-om-id="65c09c0e:416">
+        <video data-slide-video="" data-src="../c12-hero.mp4" muted="" loop="" playsinline="" preload="metadata" data-om-id="65c09c0e:417"></video>
+        <div class="case-video-fallback" data-om-id="65c09c0e:418">c12-hero.mp4</div>
+      </div>
+
+      <img class="case-img" style="grid-area: 5 / 1 / 13 / 5;" src="images/c12-tall.webp" alt="" data-om-id="65c09c0e:419">
+
+      <div class="case-video-frame" style="grid-area: 8 / 5 / 13 / 9;" data-om-id="65c09c0e:420">
+        <video data-slide-video="" data-src="../clients2.mp4" muted="" loop="" playsinline="" preload="metadata" data-om-id="65c09c0e:421"></video>
+        <div class="case-video-fallback" data-om-id="65c09c0e:422">clients2.mp4</div>
+      </div>
+
+      <div class="case-video-frame" style="grid-area: 8 / 9 / 13 / 13;" data-om-id="65c09c0e:423">
+        <img class="case-img" src="images/c12-wide.webp" alt="" style="position:absolute;inset:0;width:100%;height:100%;" data-om-id="65c09c0e:424">
+      </div>
+    </div>
+  </section>
+
+  <!-- ============== SLIDE 15 — THESTORAGE ============== -->
+  <section class="s-work-bleed" data-label="15 TheStorage" data-om-id="65c09c0e:425" data-screen-label="15 15 TheStorage" data-om-validate="no_overflowing_text,no_overlapping_text,slide_sized_text" data-deck-slide="14">
+    <div class="meta" data-om-id="65c09c0e:426">
+      <div class="left" data-om-id="65c09c0e:427"><span class="num" data-om-id="65c09c0e:428">15</span><span data-om-id="65c09c0e:429"></span></div>
+      <div data-om-id="65c09c0e:430"></div>
+    </div>
+
+    <div style="display: grid; grid-template-columns: repeat(12, minmax(0, 1fr)); grid-template-rows: repeat(12, minmax(0, 1fr)); gap: 12px; height: 100%; padding: 0; box-sizing: border-box; overflow: hidden;" data-om-id="65c09c0e:431">
+
+      <div class="case-ink-card" style="grid-area: 1 / 1 / 5 / 5; padding-top: 80px;" data-om-id="65c09c0e:432">
+        <p class="name" data-om-id="65c09c0e:434">TheStorage.</p>
+      </div>
+
+      <img class="case-img" style="grid-area: 1 / 5 / 8 / 13; object-position: 50% 70%;" src="images/storage.webp" alt="" data-om-id="65c09c0e:435">
+      <img class="case-img" style="grid-area: 5 / 1 / 13 / 5;" src="images/storage-2.webp" alt="" data-om-id="65c09c0e:436">
+      <img class="case-img" style="grid-area: 8 / 5 / 13 / 13;" src="images/storage-3.webp" alt="" data-om-id="65c09c0e:437">
+
+    </div>
+  </section>
+
+  <!-- ============== SLIDE 16 — CANATU (mirrored) ============== -->
+  <section class="s-work-bleed" data-label="16 Canatu" data-om-id="65c09c0e:438" data-screen-label="16 16 Canatu" data-om-validate="no_overflowing_text,no_overlapping_text,slide_sized_text" data-deck-slide="15">
+    <div class="meta" data-om-id="65c09c0e:439">
+      <div class="left" data-om-id="65c09c0e:440"><span class="num" data-om-id="65c09c0e:441">16</span><span data-om-id="65c09c0e:442"></span></div>
+      <div data-om-id="65c09c0e:443"></div>
+    </div>
+
+    <div style="display: grid; grid-template-columns: repeat(12, minmax(0, 1fr)); grid-template-rows: repeat(12, minmax(0, 1fr)); gap: 12px; height: 100%; padding: 0; box-sizing: border-box; overflow: hidden;" data-om-id="65c09c0e:444">
+
+      <img class="case-img" style="grid-area: 1 / 1 / 8 / 9;" src="images/canatu.webp" alt="" data-om-id="65c09c0e:445">
+
+      <div class="case-ink-card align-right" style="grid-area: 1 / 9 / 5 / 13; padding-top: 80px;" data-om-id="65c09c0e:446">
+        <p class="name" data-om-id="65c09c0e:448">Canatu.</p>
+      </div>
+
+      <img class="case-img" style="grid-area: 8 / 1 / 13 / 9;" src="images/canatu-3.webp" alt="" data-om-id="65c09c0e:449">
+      <img class="case-img" style="grid-area: 5 / 9 / 13 / 13;" src="images/canatu-2.webp" alt="" data-om-id="65c09c0e:450">
+
+    </div>
+  </section>
+
+  <!-- ============== SLIDE 17 — HIAB ============== -->
+  <section class="s-work-bleed" data-label="17 Hiab" data-om-id="ed08d1da:442" data-screen-label="17 17 Hiab" data-om-validate="no_overflowing_text,no_overlapping_text,slide_sized_text" data-deck-slide="16" data-deck-last-visible="">
+    <div class="meta" data-om-id="ed08d1da:443">
+      <div class="left" data-om-id="ed08d1da:444"><span class="num" data-om-id="ed08d1da:445">17</span><span data-om-id="ed08d1da:446"></span></div>
+      <div data-om-id="ed08d1da:447"></div>
+    </div>
+
+    <div style="display: grid; grid-template-columns: repeat(12, minmax(0, 1fr)); grid-template-rows: repeat(12, minmax(0, 1fr)); gap: 12px; height: 100%; padding: 0; box-sizing: border-box; overflow: hidden;" data-om-id="ed08d1da:448">
+
+      <div class="case-ink-card" style="grid-area: 1 / 1 / 5 / 5; padding-top: 80px;" data-om-id="ed08d1da:449">
+        <p class="name" data-om-id="ed08d1da:450">Hiab.</p>
+      </div>
+
+      <div class="case-video-frame" style="grid-area: 1 / 5 / 8 / 13;" data-om-id="ed08d1da:451">
+        <img class="case-img" src="images/hiab.png" alt="" style="position:absolute;inset:0;width:100%;height:100%;" data-om-id="ed08d1da:452">
+      </div>
+
+      <div class="case-video-frame" style="grid-area: 5 / 1 / 13 / 5;" data-om-id="ed08d1da:453">
+        <img class="case-img" src="images/hiab-greyhairs.jpg" alt="" style="position:absolute;inset:0;width:100%;height:100%;" data-om-id="ed08d1da:454">
+      </div>
+
+      <div class="case-video-frame" style="grid-area: 8 / 5 / 13 / 13;" data-om-id="ed08d1da:455">
+        <img class="case-img" src="images/hiab-3.png" alt="" style="position:absolute;inset:0;width:100%;height:100%;" data-om-id="ed08d1da:456">
+      </div>
+
+    </div>
+  </section>
+
+  <!-- ============== SLIDE 18 — THANK YOU ============== -->
+  <section class="s-thanks" data-label="18 Thank you" style="background: var(--cream); display: flex; align-items: center; justify-content: center;">
+    <div class="meta">
+      <div class="left"><span class="num">
+</span><span></span></div>
+      <div></div>
+    </div>
+
+    <h1 style="font-family: var(--font-serif); font-size: 240px; line-height: 1; letter-spacing: -0.03em; color: var(--ink); font-weight: 400; font-style: italic; margin: 0; text-align: center;">Thank&nbsp;you.</h1>
+  </section>
+
+</deck-stage>
+
+<script src="deck-stage.js"></script>
+
+<script>
+  // Slide-bound video playback for case studies — set src from data-src,
+  // skip silently if the file isn't present, play on slide enter / pause on leave.
+  (() => {
+    const videos = document.querySelectorAll('video[data-slide-video]');
+    videos.forEach((v) => {
+      const src = v.getAttribute('data-src');
+      const frame = v.closest('.case-video-frame');
+      if (!src || !frame) return;
+      fetch(src, { method: 'HEAD' })
+        .then((r) => {
+          if (!r.ok) throw new Error('missing');
+          v.src = src;
+          v.load();
+          v.addEventListener('loadeddata', () => frame.classList.add('has-video'), { once: true });
+        })
+        .catch(() => {});
+    });
+
+    function updateAll() {
+      videos.forEach((v) => {
+        const section = v.closest('section');
+        if (!section || !v.src) return;
+        if (section.hasAttribute('data-deck-active')) v.play().catch(() => {});
+        else v.pause();
+      });
+    }
+    const deck = document.querySelector('deck-stage');
+    if (deck) {
+      new MutationObserver(updateAll).observe(deck, {
+        subtree: true, attributes: true, attributeFilter: ['data-deck-active']
+      });
+    }
+    setTimeout(updateAll, 600);
+    window.addEventListener('deck-unlocked', () => setTimeout(updateAll, 300));
+  })();
+</script>
+
+<script>
+  // ── Password gate ────────────────────────────────────────────────────
+  // Client-side SHA-256 check. NOT cryptographically secure — anyone with
+  // browser dev tools and a few minutes can bypass. Keeps casual viewers out.
+  (() => {
+    const HASH = 'fb52aa79d0249ab31a8c8b10d0f448f7669145b3a8a2452f9101642df768bb62';
+    const STORE_KEY = 'lumidb-deck-unlocked-v1';
+
+    const body = document.body;
+    const form = document.getElementById('gate-form');
+    const input = document.getElementById('gate-input');
+    const err = document.getElementById('gate-err');
+
+    async function sha256(str) {
+      const buf = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(str));
+      return [...new Uint8Array(buf)].map(b => b.toString(16).padStart(2, '0')).join('');
+    }
+
+    function unlock() {
+      body.classList.remove('locked');
+      try { sessionStorage.setItem(STORE_KEY, '1'); } catch (e) {}
+      window.dispatchEvent(new Event('deck-unlocked'));
+    }
+
+    try { if (sessionStorage.getItem(STORE_KEY) === '1') unlock(); } catch (e) {}
+
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const pw = input.value;
+      if (!pw) return;
+      const h = await sha256(pw);
+      if (h === HASH) {
+        err.classList.remove('show');
+        unlock();
+      } else {
+        err.classList.add('show');
+        input.classList.remove('shake');
+        void input.offsetWidth;
+        input.classList.add('shake');
+        input.select();
+      }
+    });
+  })();
+</script>
+
+</body></html>
